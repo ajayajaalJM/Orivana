@@ -48,6 +48,17 @@ export function Nav() {
   }, []);
 
   const showSolidNav = scrolled || !isHome || menuOpen;
+  // Mobile always renders a solid light header (max-lg:bg). Light-on-image text is desktop-only
+  // so logo, cart, and menu stay readable over the hero without white-on-white on small screens.
+  const heroOverlayNav = isHome && !scrolled && !menuOpen;
+
+  const navTextClass = heroOverlayNav
+    ? "text-[var(--color-text)] lg:text-[var(--color-on-image)]"
+    : "text-[var(--color-text)]";
+
+  const navIconBarClass = heroOverlayNav
+    ? "bg-[var(--color-text)] lg:bg-[var(--color-on-image)]"
+    : "bg-[var(--color-text)]";
 
   return (
     <>
@@ -64,11 +75,7 @@ export function Nav() {
         <div className="mx-auto flex max-w-[var(--max-width)] items-center justify-between px-6 py-4 lg:px-8 lg:py-7">
           <Link
             href="/"
-            className={`relative z-[60] shrink-0 font-serif text-sm tracking-[0.2em] sm:tracking-[0.28em] lg:text-lg lg:tracking-[0.32em] ${
-              isHome && !scrolled && !menuOpen
-                ? "text-[var(--color-on-image)]"
-                : "text-[var(--color-text)]"
-            }`}
+            className={`relative z-[60] shrink-0 font-serif text-sm tracking-[0.2em] sm:tracking-[0.28em] lg:text-lg lg:tracking-[0.32em] ${navTextClass}`}
           >
             ORIVANA
           </Link>
@@ -101,11 +108,7 @@ export function Nav() {
             <button
               type="button"
               onClick={toggleDrawer}
-              className={`relative flex h-11 min-w-[44px] items-center justify-center transition-opacity hover:opacity-70 ${
-                isHome && !scrolled && !menuOpen
-                  ? "text-[var(--color-on-image)]"
-                  : "text-[var(--color-text)]"
-              }`}
+              className={`relative flex h-11 min-w-[44px] items-center justify-center transition-opacity hover:opacity-70 ${navTextClass}`}
               aria-label={brand.harvestSelection}
             >
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden>
@@ -132,25 +135,13 @@ export function Nav() {
               aria-controls="mobile-nav-menu"
             >
             <span
-              className={`block h-px w-5 transition-all duration-500 ${
-                isHome && !scrolled && !menuOpen
-                  ? "bg-[var(--color-on-image)]"
-                  : "bg-[var(--color-text)]"
-              } ${menuOpen ? "translate-y-[5px] rotate-45" : ""}`}
+              className={`block h-px w-5 transition-all duration-500 ${navIconBarClass} ${menuOpen ? "translate-y-[5px] rotate-45" : ""}`}
             />
             <span
-              className={`block h-px w-5 transition-all duration-500 ${
-                isHome && !scrolled && !menuOpen
-                  ? "bg-[var(--color-on-image)]"
-                  : "bg-[var(--color-text)]"
-              } ${menuOpen ? "opacity-0" : ""}`}
+              className={`block h-px w-5 transition-all duration-500 ${navIconBarClass} ${menuOpen ? "opacity-0" : ""}`}
             />
             <span
-              className={`block h-px w-5 transition-all duration-500 ${
-                isHome && !scrolled && !menuOpen
-                  ? "bg-[var(--color-on-image)]"
-                  : "bg-[var(--color-text)]"
-              } ${menuOpen ? "-translate-y-[5px] -rotate-45" : ""}`}
+              className={`block h-px w-5 transition-all duration-500 ${navIconBarClass} ${menuOpen ? "-translate-y-[5px] -rotate-45" : ""}`}
             />
             </button>
           </div>
