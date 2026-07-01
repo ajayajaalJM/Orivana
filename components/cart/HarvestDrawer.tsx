@@ -13,7 +13,7 @@ import { QuantitySelector } from "@/components/shop/QuantitySelector";
 import { PriceDisplay } from "@/components/shop/PriceDisplay";
 
 export function HarvestDrawer() {
-  const { cart, isOpen, closeDrawer, updateQuantity, removeLine, checkout, isLoading } =
+  const { cart, isOpen, closeDrawer, updateQuantity, removeLine, checkout, isLoading, error, clearError } =
     useCart();
   const { cartMode, tier } = useMembership();
 
@@ -154,6 +154,14 @@ export function HarvestDrawer() {
 
             {cart.lines.length > 0 && (
               <div className="border-t border-[var(--color-border)] px-6 py-6">
+                {error && (
+                  <p className="mb-4 text-center text-xs text-[var(--color-accent)]" role="alert">
+                    {error}
+                    <button type="button" onClick={clearError} className="ml-2 underline">
+                      Dismiss
+                    </button>
+                  </p>
+                )}
                 <div className="mb-6 flex items-baseline justify-between">
                   <span className="text-xs tracking-[0.2em] uppercase text-[var(--color-muted)]">
                     Subtotal

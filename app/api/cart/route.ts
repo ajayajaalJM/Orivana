@@ -38,8 +38,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: result.error }, { status: 400 });
     }
     return NextResponse.json({ success: true, cart: result.cart });
-  } catch {
-    return NextResponse.json({ success: false }, { status: 500 });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Cart update failed" },
+      { status: 500 }
+    );
   }
 }
 

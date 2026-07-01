@@ -29,20 +29,33 @@ export function AddToHarvestButton({
   compact = false,
   disabled = false,
 }: AddToHarvestButtonProps) {
-  const { addItem, isLoading } = useCart();
+  const { addItem, isLoading, clearError } = useCart();
   const [confirmed, setConfirmed] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   const handleClick = async () => {
-    const success = await addItem(variantId, quantity, { openDrawer });
-    if (success) {
+    if (!variantId) {
+      setLocalError("Select a size");
+      setTimeout(() => setLocalError(null), 3000);
+      return;
+    }
+    clearError();
+    setLocalError(null);
+    const result = await addItem(variantId, quantity, { openDrawer });
+    if (result.success) {
       setConfirmed(true);
       setTimeout(() => setConfirmed(false), 2000);
+    } else {
+      setLocalError(result.error ?? "Could not add to harvest");
+      setTimeout(() => setLocalError(null), 3000);
     }
   };
 
   const displayLabel = confirmed
     ? brand.addedToHarvest
-    : label ?? brand.addToHarvest;
+    : localError
+      ? localError
+      : label ?? brand.addToHarvest;
 
   if (compact) {
     return (
@@ -51,7 +64,7 @@ export function AddToHarvestButton({
         whileTap={{ scale: 0.98 }}
         onClick={handleClick}
         disabled={isLoading || disabled}
-        className={`text-[10px] tracking-[0.18em] uppercase text-[var(--color-muted)] transition-colors hover:text-[var(--color-accent)] disabled:opacity-40 ${className}`}
+        className={`text-[10px] tracking-[0.18em] uppercase transition-colors disabled:opacity-40 ${localError ? "text-[var(--color-accent)]" : "text-[var(--color-muted)] hover:text-[var(--color-accent)]"} ${className}`}
       >
         <AnimatePresence mode="wait">
           <motion.span

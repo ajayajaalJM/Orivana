@@ -26,12 +26,18 @@ interface CartContextValue {
   isOpen: boolean;
   isLoading: boolean;
   justAdded: boolean;
+  error: string | null;
+  clearError: () => void;
   openDrawer: () => void;
   closeDrawer: () => void;
   toggleDrawer: () => void;
   refreshCart: () => Promise<void>;
-  addItem: (variantId: string, quantity?: number, options?: { openDrawer?: boolean }) => Promise<boolean>;
-  addItems: (items: { variantId: string; quantity?: number }[]) => Promise<boolean>;
+  addItem: (
+    variantId: string,
+    quantity?: number,
+    options?: { openDrawer?: boolean }
+  ) => Promise<{ success: boolean; error?: string }>;
+  addItems: (items: { variantId: string; quantity?: number }[]) => Promise<{ success: boolean; error?: string }>;
   updateQuantity: (lineId: string, quantity: number) => Promise<void>;
   removeLine: (lineId: string) => Promise<void>;
   checkout: () => void;
@@ -44,6 +50,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const clearError = useCallback(() => setError(null), []);
 
   const refreshCart = useCallback(async () => {
     try {
@@ -68,6 +77,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const addItem = useCallback(
     async (variantId: string, quantity = 1, options?: { openDrawer?: boolean }) => {
       setIsLoading(true);
+      setError(null);
       try {
         const res = await fetch("/api/cart", {
           method: "POST",
@@ -79,11 +89,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           setCart(data.cart);
           setJustAdded(true);
           if (options?.openDrawer !== false) setIsOpen(true);
-          return true;
+          return { success: true };
         }
-        return false;
+        const message = data.error ?? "Could not add to harvest";
+        setError(message);
+        return { success: false, error: message };
       } catch {
-        return false;
+        const message = "Could not add to harvest";
+        setError(message);
+        return { success: false, error: message };
       } finally {
         setIsLoading(false);
       }
@@ -94,6 +108,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const addItems = useCallback(
     async (items: { variantId: string; quantity?: number }[]) => {
       setIsLoading(true);
+      setError(null);
       try {
         const res = await fetch("/api/cart", {
           method: "POST",
@@ -105,11 +120,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           setCart(data.cart);
           setJustAdded(true);
           setIsOpen(true);
-          return true;
+          return { success: true };
         }
-        return false;
+        const message = data.error ?? "Could not add to harvest";
+        setError(message);
+        return { success: false, error: message };
       } catch {
-        return false;
+        const message = "Could not add to harvest";
+        setError(message);
+        return { success: false, error: message };
       } finally {
         setIsLoading(false);
       }
@@ -159,6 +178,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       isOpen,
       isLoading,
       justAdded,
+      error,
+      clearError,
       openDrawer: () => setIsOpen(true),
       closeDrawer: () => setIsOpen(false),
       toggleDrawer: () => setIsOpen((o) => !o),
@@ -169,7 +190,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       removeLine,
       checkout,
     }),
-    [cart, isOpen, isLoading, justAdded, refreshCart, addItem, addItems, updateQuantity, removeLine, checkout]
+    [cart, isOpen, isLoading, justAdded, error, clearError, refreshCart, addItem, addItems, updateQuantity, removeLine, checkout]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

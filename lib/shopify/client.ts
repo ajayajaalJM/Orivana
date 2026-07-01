@@ -22,6 +22,13 @@ export interface ShopifyFetchOptions {
   tags?: string[];
 }
 
+function authHeaderSets(token: string): Record<string, string>[] {
+  return [
+    { "Shopify-Storefront-Private-Token": token },
+    { "X-Shopify-Storefront-Access-Token": token },
+  ];
+}
+
 /** Centralized Shopify Storefront API client — credentials from environment variables only. */
 export async function shopifyFetch<T>(
   query: string,
@@ -43,25 +50,33 @@ export async function shopifyFetch<T>(
       ? { cache: "no-store" as const }
       : { next: { revalidate, ...(tags ? { tags } : {}) } };
 
-  const res = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      // Private Storefront token — server-side only (Headless channel → Private access token)
-      "Shopify-Storefront-Private-Token": config.storefrontAccessToken,
-    },
-    body: JSON.stringify({ query, variables }),
-    ...nextOptions,
-  });
+  let lastError = "Shopify API request failed";
 
-  if (!res.ok) {
-    throw new Error(`Shopify API request failed (${res.status})`);
+  for (const authHeaders of authHeaderSets(config.storefrontAccessToken)) {
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeaders,
+      },
+      body: JSON.stringify({ query, variables }),
+      ...nextOptions,
+    });
+
+    const json = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      lastError = `Shopify API request failed (${res.status})`;
+      continue;
+    }
+
+    if (json.errors?.length) {
+      lastError = json.errors[0]?.message ?? "Shopify API error";
+      continue;
+    }
+
+    return json.data as T;
   }
 
-  const json = await res.json();
-  if (json.errors?.length) {
-    throw new Error(json.errors[0]?.message ?? "Shopify API error");
-  }
-
-  return json.data as T;
+  throw new Error(lastError);
 }
