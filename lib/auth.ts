@@ -11,6 +11,11 @@ import {
 
 export type { MemberOrder };
 
+// NextAuth v4 requires NEXTAUTH_URL. Derive from site URL when unset (e.g. Vercel).
+if (!process.env.NEXTAUTH_URL?.trim() && process.env.NEXT_PUBLIC_SITE_URL?.trim()) {
+  process.env.NEXTAUTH_URL = process.env.NEXT_PUBLIC_SITE_URL.trim().replace(/\/$/, "");
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -84,7 +89,6 @@ export const authOptions: NextAuthOptions = {
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-  trustHost: true,
 };
 
 export async function getSession() {
