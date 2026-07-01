@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
@@ -16,8 +16,10 @@ export function HarvestDrawer() {
   const { cart, isOpen, closeDrawer, updateQuantity, removeLine, checkout, isLoading, error, clearError } =
     useCart();
   const { cartMode, tier } = useMembership();
+  const [commerceHint, setCommerceHint] = useState<string | null>(null);
 
   const drawerTitle = getCartLabel(cartMode);
+  const canCheckout = Boolean(cart.checkoutUrl) || cartMode === "trade-quote";
   const checkoutLabel =
     cartMode === "trade-quote"
       ? brand.requestInvoice
@@ -26,6 +28,25 @@ export function HarvestDrawer() {
         : cart.checkoutUrl
           ? getCheckoutLabel(cartMode)
           : brand.checkoutUnavailable;
+
+  useEffect(() => {
+    if (!isOpen || cart.checkoutUrl) {
+      setCommerceHint(null);
+      return;
+    }
+
+    fetch("/api/shopify/status")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.storefrontLive) return;
+        if (data.commerceMode === "degraded") {
+          setCommerceHint(brand.checkoutConfigureHint);
+        } else if (data.commerceMode === "demo") {
+          setCommerceHint("Running in demo mode — add a Storefront token to enable checkout.");
+        }
+      })
+      .catch(() => undefined);
+  }, [isOpen, cart.checkoutUrl]);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
@@ -168,10 +189,15 @@ export function HarvestDrawer() {
                   </span>
                   <PriceDisplay money={cart.cost.subtotalAmount} className="font-serif text-lg text-[var(--color-text)]" />
                 </div>
+                {commerceHint && !canCheckout && (
+                  <p className="mb-4 text-center text-xs leading-relaxed text-[var(--color-muted)]">
+                    {commerceHint}
+                  </p>
+                )}
                 <Button
                   variant="primary"
                   className="w-full"
-                  disabled={cartMode !== "trade-quote" && !cart.checkoutUrl && cart.lines.length > 0}
+                  disabled={!canCheckout && cart.lines.length > 0}
                   onClick={
                     cartMode === "trade-quote"
                       ? () => {

@@ -66,7 +66,12 @@ export async function shopifyFetch<T>(
     const json = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-      lastError = `Shopify API request failed (${res.status})`;
+      if (res.status === 402) {
+        lastError =
+          "Storefront API unavailable — use your Headless Private Storefront token in Vercel, not an Admin API token (shpat_).";
+      } else {
+        lastError = `Shopify API request failed (${res.status})`;
+      }
       continue;
     }
 

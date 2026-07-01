@@ -10,6 +10,7 @@ export async function getCartIdFromCookie(): Promise<string | undefined> {
 
 export async function setCartIdCookie(cartId: string) {
   const store = await cookies();
+  store.delete(MOCK_CART_COOKIE);
   store.set(CART_ID_COOKIE, cartId, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

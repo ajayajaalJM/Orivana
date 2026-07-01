@@ -5,8 +5,9 @@ import {
   setMockCartCookie,
   clearCartCookies,
 } from "../cart-cookie";
+import { isShopifyConfigured, getStoreDomain } from "./config";
+import { buildCartPermalinkCheckoutUrl } from "./checkout-url";
 import { CART_FRAGMENT, shopifyFetch } from "./graphql";
-import { isShopifyLive } from "./live";
 import { findVariantProduct, formatPrice } from "./products";
 import type { AddToCartResult, Cart, CartLine } from "./types";
 
@@ -44,9 +45,9 @@ function parseOrigin(title: string): string | undefined {
 }
 
 export function mapShopifyCart(node: ShopifyCartNode): Cart {
-  return {
+  return withCheckoutUrl({
     id: node.id,
-    checkoutUrl: node.checkoutUrl,
+    checkoutUrl: node.checkoutUrl || null,
     totalQuantity: node.totalQuantity,
     cost: node.cost,
     lines: node.lines.edges.map(({ node: line }) => ({
@@ -63,7 +64,7 @@ export function mapShopifyCart(node: ShopifyCartNode): Cart {
         availableForSale: line.merchandise.availableForSale,
       },
     })),
-  };
+  });
 }
 
 function emptyCart(): Cart {
@@ -105,13 +106,21 @@ async function saveMockCart(cart: Cart) {
   await setMockCartCookie(JSON.stringify(cart));
 }
 
+function withCheckoutUrl(cart: Cart): Cart {
+  if (cart.checkoutUrl) return cart;
+  const domain = getStoreDomain();
+  if (!domain) return cart;
+  const permalink = buildCartPermalinkCheckoutUrl(cart.lines, domain);
+  return permalink ? { ...cart, checkoutUrl: permalink } : cart;
+}
+
 function recalculateMockCart(lines: CartLine[]): Cart {
   let total = 0;
   for (const line of lines) {
     total += parseFloat(line.merchandise.price.amount) * line.quantity;
   }
   const amount = total.toFixed(2);
-  return {
+  return withCheckoutUrl({
     id: "mock-cart",
     checkoutUrl: null,
     totalQuantity: lines.reduce((sum, l) => sum + l.quantity, 0),
@@ -120,7 +129,7 @@ function recalculateMockCart(lines: CartLine[]): Cart {
       totalAmount: { amount, currencyCode: "USD" },
     },
     lines,
-  };
+  });
 }
 
 async function addToMockCart(variantId: string, quantity: number): Promise<Cart> {
@@ -177,7 +186,7 @@ async function updateMockLine(lineId: string, quantity: number): Promise<Cart> {
 export async function createCart(
   lines: { merchandiseId: string; quantity: number }[]
 ): Promise<AddToCartResult> {
-  if (!(await isShopifyLive())) {
+  if (!isShopifyConfigured()) {
     let cart = await getMockCart();
     for (const line of lines) {
       cart = await addToMockCart(line.merchandiseId, line.quantity);
@@ -213,7 +222,7 @@ export async function createCart(
 }
 
 export async function getCart(cartId?: string): Promise<Cart> {
-  if (!(await isShopifyLive())) {
+  if (!isShopifyConfigured()) {
     return getMockCart();
   }
 
@@ -242,7 +251,7 @@ export async function addLineItem(
   quantity = 1
 ): Promise<AddToCartResult> {
   try {
-    if (!(await isShopifyLive())) {
+    if (!isShopifyConfigured()) {
       const cart = await addToMockCart(variantId, quantity);
       return { success: true, cart };
     }
@@ -300,7 +309,7 @@ export async function updateLineQuantity(
   quantity: number
 ): Promise<AddToCartResult> {
   try {
-    if (!(await isShopifyLive())) {
+    if (!isShopifyConfigured()) {
       const cart = await updateMockLine(lineId, quantity);
       return { success: true, cart };
     }

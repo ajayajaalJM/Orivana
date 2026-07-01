@@ -1,6 +1,7 @@
 import { shopifyFetch, isShopifyConfigured } from "./client";
 
 let cachedLive: boolean | null = null;
+let cachedError: string | null = null;
 let cachedAt = 0;
 const CACHE_MS = 60_000;
 
@@ -19,15 +20,22 @@ export async function isShopifyLive(): Promise<boolean> {
       { cache: "no-store" }
     );
     cachedLive = true;
-  } catch {
+    cachedError = null;
+  } catch (err) {
     cachedLive = false;
+    cachedError = err instanceof Error ? err.message : "Storefront API unavailable";
   }
 
   cachedAt = Date.now();
   return cachedLive;
 }
 
+export function getStorefrontError(): string | null {
+  return cachedError;
+}
+
 export function resetShopifyLiveCache() {
   cachedLive = null;
+  cachedError = null;
   cachedAt = 0;
 }
