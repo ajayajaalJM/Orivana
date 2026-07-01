@@ -9,9 +9,18 @@ function readEnv(name: string): string | undefined {
   return value || undefined;
 }
 
+/** Strip protocol/trailing slash so env values like https://store.myshopify.com/ still work. */
+export function normalizeStoreDomain(raw: string): string {
+  return raw
+    .trim()
+    .replace(/^https?:\/\//i, "")
+    .replace(/\/+$/, "");
+}
+
 /** Read Shopify credentials from environment variables (server-only). */
 export function getShopifyConfig(): ShopifyConfig | null {
-  const storeDomain = readEnv("SHOPIFY_STORE_DOMAIN");
+  const rawDomain = readEnv("SHOPIFY_STORE_DOMAIN");
+  const storeDomain = rawDomain ? normalizeStoreDomain(rawDomain) : undefined;
   const storefrontAccessToken = readEnv("SHOPIFY_STOREFRONT_ACCESS_TOKEN");
   const apiVersion = readEnv("SHOPIFY_API_VERSION");
 

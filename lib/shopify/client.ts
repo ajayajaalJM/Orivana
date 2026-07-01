@@ -53,22 +53,32 @@ export async function shopifyFetch<T>(
   let lastError = "Shopify API request failed";
 
   for (const authHeaders of authHeaderSets(config.storefrontAccessToken)) {
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...authHeaders,
-      },
-      body: JSON.stringify({ query, variables }),
-      ...nextOptions,
-    });
+    let res: Response;
+    try {
+      res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...authHeaders,
+        },
+        body: JSON.stringify({ query, variables }),
+        ...nextOptions,
+      });
+    } catch (err) {
+      const detail = err instanceof Error ? err.message : "network error";
+      lastError =
+        detail === "fetch failed"
+          ? `Cannot reach Shopify at ${config.storeDomain}. Use the .myshopify.com hostname only (no https://).`
+          : `Shopify request failed: ${detail}`;
+      continue;
+    }
 
     const json = await res.json().catch(() => ({}));
 
     if (!res.ok) {
       if (res.status === 402) {
         lastError =
-          "Storefront API unavailable — use your Headless Private Storefront token in Vercel, not an Admin API token (shpat_).";
+          "Shopify store unavailable (402 PAYMENT_REQUIRED). Log into Shopify admin, pay any outstanding balance, and confirm your plan includes the Online Store. Then use your Headless channel Private Storefront token.";
       } else {
         lastError = `Shopify API request failed (${res.status})`;
       }

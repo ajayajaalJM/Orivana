@@ -109,7 +109,7 @@ export const brand = {
   harvestSelectionEmpty: "Your harvest selection is empty. Explore the collection to begin.",
   checkoutUnavailable: "Checkout unavailable",
   checkoutConfigureHint:
-    "Storefront API is not connected. In Vercel, set SHOPIFY_STOREFRONT_ACCESS_TOKEN to your Headless Private Storefront token (not an Admin shpat_ token).",
+    "Storefront API is not connected. Check Shopify admin for unpaid balance or plan issues, then set SHOPIFY_STOREFRONT_ACCESS_TOKEN to your Headless channel Private Storefront token.",
   recipesTitle: "Harvest Recipes",
   recipesSubtitle: "Culinary Stories from the Land",
   recipesProductHeading: "Recipes with this ingredient",

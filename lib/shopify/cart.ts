@@ -7,6 +7,7 @@ import {
 } from "../cart-cookie";
 import { isShopifyConfigured, getStoreDomain } from "./config";
 import { buildCartPermalinkCheckoutUrl } from "./checkout-url";
+import { prepareCheckoutUrl } from "./checkout";
 import { CART_FRAGMENT, shopifyFetch } from "./graphql";
 import { findVariantProduct, formatPrice } from "./products";
 import type { AddToCartResult, Cart, CartLine } from "./types";
@@ -45,9 +46,9 @@ function parseOrigin(title: string): string | undefined {
 }
 
 export function mapShopifyCart(node: ShopifyCartNode): Cart {
-  return withCheckoutUrl({
+  return {
     id: node.id,
-    checkoutUrl: node.checkoutUrl || null,
+    checkoutUrl: prepareCheckoutUrl(node.checkoutUrl),
     totalQuantity: node.totalQuantity,
     cost: node.cost,
     lines: node.lines.edges.map(({ node: line }) => ({
@@ -64,7 +65,7 @@ export function mapShopifyCart(node: ShopifyCartNode): Cart {
         availableForSale: line.merchandise.availableForSale,
       },
     })),
-  });
+  };
 }
 
 function emptyCart(): Cart {
@@ -106,8 +107,9 @@ async function saveMockCart(cart: Cart) {
   await setMockCartCookie(JSON.stringify(cart));
 }
 
-function withCheckoutUrl(cart: Cart): Cart {
-  if (cart.checkoutUrl) return cart;
+/** Demo-mode fallback only — Online Store permalinks are blocked when password protection is on. */
+function withMockCheckoutUrl(cart: Cart): Cart {
+  if (cart.checkoutUrl || cart.id !== "mock-cart") return cart;
   const domain = getStoreDomain();
   if (!domain) return cart;
   const permalink = buildCartPermalinkCheckoutUrl(cart.lines, domain);
@@ -120,7 +122,7 @@ function recalculateMockCart(lines: CartLine[]): Cart {
     total += parseFloat(line.merchandise.price.amount) * line.quantity;
   }
   const amount = total.toFixed(2);
-  return withCheckoutUrl({
+  return withMockCheckoutUrl({
     id: "mock-cart",
     checkoutUrl: null,
     totalQuantity: lines.reduce((sum, l) => sum + l.quantity, 0),
