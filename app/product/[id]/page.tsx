@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProductPageContent } from "@/components/product/ProductPageContent";
 import { Footer } from "@/components/sections/Footer";
-import { getProduct, getProducts } from "@/lib/shopify";
+import { getProduct, getProductsByHandles } from "@/lib/shopify";
+import { getCollectionProducts } from "@/lib/shopify/collections";
+import { createPageMetadata } from "@/lib/metadata";
 import { getProductStory, getRecipesForProduct } from "@/lib/sanity";
 
 interface Props {
@@ -13,31 +15,36 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const product = await getProduct(id);
   if (!product) return { title: "Product" };
-  return {
+  return createPageMetadata({
     title: product.title,
     description: product.description,
-    openGraph: {
-      title: product.title,
-      description: product.description,
-      images: product.featuredImage ? [product.featuredImage.url] : [],
-    },
-  };
+    path: `/product/${id}`,
+    images: product.featuredImage ? [product.featuredImage.url] : undefined,
+  });
 }
 
 export default async function ProductPage({ params }: Props) {
   const { id } = await params;
-  const [product, story, allProducts, recipes] = await Promise.all([
+  const [product, story, recipes] = await Promise.all([
     getProduct(id),
     getProductStory(id),
-    getProducts(12),
     getRecipesForProduct(id, 4),
   ]);
 
   if (!product) notFound();
 
-  const relatedProducts = allProducts
-    .filter((p) => p.handle !== product.handle)
-    .slice(0, 3);
+  const relatedFromMetafields = product.relatedProductHandles?.length
+    ? await getProductsByHandles(product.relatedProductHandles)
+    : [];
+
+  const relatedProducts =
+    relatedFromMetafields.length > 0
+      ? relatedFromMetafields
+      : (
+          await getCollectionProducts(product.collections?.[0] ?? "dates", 4)
+        )
+          .filter((p) => p.handle !== product.handle)
+          .slice(0, 3);
 
   return (
     <>

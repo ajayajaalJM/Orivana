@@ -7,6 +7,7 @@ import { CollectionProductSection } from "@/components/collections/CollectionPro
 import { CollectionFeaturedRecipe } from "@/components/collections/CollectionFeaturedRecipe";
 import { CollectionJournalPreview } from "@/components/collections/CollectionJournalPreview";
 import { getCollectionEditorial } from "@/lib/collections";
+import { createPageMetadata } from "@/lib/metadata";
 import { getCollectionProducts, resolveCollectionHandle } from "@/lib/shopify";
 import { getRecipe, getJournalPosts } from "@/lib/sanity";
 
@@ -18,10 +19,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { handle } = await params;
   const resolved = resolveCollectionHandle(handle);
   const editorial = getCollectionEditorial(resolved);
-  return {
+  return createPageMetadata({
     title: editorial?.title ?? "Collection",
     description: editorial?.heroIntro,
-  };
+    path: `/collections/${resolved}`,
+  });
 }
 
 export default async function CollectionDetailPage({ params }: Props) {

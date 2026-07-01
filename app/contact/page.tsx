@@ -3,12 +3,14 @@ import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { brand } from "@/lib/brand";
+import { createPageMetadata } from "@/lib/metadata";
 import { Footer } from "@/components/sections/Footer";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Contact",
   description: `Correspondence with the House of Orivana — ${brand.tagline}.`,
-};
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (

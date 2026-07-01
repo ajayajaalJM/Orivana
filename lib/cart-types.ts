@@ -1,4 +1,4 @@
-import type { ShopifyMoney } from "./shopify";
+import type { ShopifyMoney } from "./shopify/types";
 
 export interface CartLineMerchandise {
   variantId: string;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -18,9 +18,21 @@ export default function JoinPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [customerAccountEnabled, setCustomerAccountEnabled] = useState(false);
   const tierCopy = brand.tiers.individual;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => {
+    fetch("/api/shopify/status")
+      .then((res) => res.json())
+      .then((data) => setCustomerAccountEnabled(Boolean(data.customerAccount)))
+      .catch(() => setCustomerAccountEnabled(false));
+  }, []);
+
+  const handleShopifyJoin = () => {
+    window.location.href = "/api/customer/account/auth?returnTo=/membership";
+  };
+
+  const handleDemoSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -74,51 +86,68 @@ export default function JoinPage() {
                 ))}
               </ul>
 
-              <form onSubmit={handleSubmit} className="space-y-10">
-                <div>
-                  <label className="mb-3 block text-xs tracking-[0.14em] uppercase text-[var(--color-muted)] sm:tracking-[0.2em]">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    className="input-luxury"
-                  />
+              {customerAccountEnabled ? (
+                <div className="space-y-8">
+                  <Body className="text-center text-sm text-[var(--color-muted)]">
+                    Create your account through Shopify&apos;s secure sign-in. New members can register
+                    during the flow.
+                  </Body>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    className="w-full"
+                    onClick={handleShopifyJoin}
+                  >
+                    {brand.harvestCircleJoin}
+                  </Button>
                 </div>
-                <div>
-                  <label className="mb-3 block text-xs tracking-[0.14em] uppercase text-[var(--color-muted)] sm:tracking-[0.2em]">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="input-luxury"
-                  />
-                </div>
-                <div>
-                  <label className="mb-3 block text-xs tracking-[0.14em] uppercase text-[var(--color-muted)] sm:tracking-[0.2em]">
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={6}
-                    className="input-luxury"
-                  />
-                </div>
+              ) : (
+                <form onSubmit={handleDemoSubmit} className="space-y-10">
+                  <div>
+                    <label className="mb-3 block text-xs tracking-[0.14em] uppercase text-[var(--color-muted)] sm:tracking-[0.2em]">
+                      Name
+                    </label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      className="input-luxury"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-3 block text-xs tracking-[0.14em] uppercase text-[var(--color-muted)] sm:tracking-[0.2em]">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="input-luxury"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-3 block text-xs tracking-[0.14em] uppercase text-[var(--color-muted)] sm:tracking-[0.2em]">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      className="input-luxury"
+                    />
+                  </div>
 
-                {error && <p className="text-sm font-light text-red-400/80">{error}</p>}
+                  {error && <p className="text-sm font-light text-red-400/80">{error}</p>}
 
-                <Button type="submit" variant="primary" disabled={loading} className="w-full">
-                  {loading ? "Joining..." : brand.harvestCircleJoin}
-                </Button>
-              </form>
+                  <Button type="submit" variant="primary" disabled={loading} className="w-full">
+                    {loading ? "Joining..." : brand.harvestCircleJoin}
+                  </Button>
+                </form>
+              )}
 
               <Body className="mt-12 text-center text-sm">
                 <Link

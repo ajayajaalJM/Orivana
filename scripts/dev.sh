@@ -61,5 +61,6 @@ echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-export NEXTAUTH_URL="${NEXTAUTH_URL:-http://localhost:${PORT}}"
+export NEXT_PUBLIC_SITE_URL="${NEXT_PUBLIC_SITE_URL:-http://localhost:${PORT}}"
+export NEXTAUTH_URL="${NEXTAUTH_URL:-$NEXT_PUBLIC_SITE_URL}"
 exec npx next dev --port "$PORT"

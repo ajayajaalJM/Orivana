@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { RecipePageContent } from "@/components/recipes/RecipePageContent";
 import { Footer } from "@/components/sections/Footer";
 import { getRecipe } from "@/lib/sanity";
+import { createPageMetadata } from "@/lib/metadata";
 import { getProducts } from "@/lib/shopify";
 
 interface Props {
@@ -13,10 +14,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const recipe = await getRecipe(slug);
   if (!recipe) return { title: "Recipe" };
-  return {
+  return createPageMetadata({
     title: recipe.title,
     description: recipe.description,
-  };
+    path: `/recipes/${slug}`,
+  });
 }
 
 export default async function RecipePage({ params }: Props) {

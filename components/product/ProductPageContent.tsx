@@ -12,8 +12,10 @@ import { H1, H2, Excerpt, Price, Caption } from "@/components/ui/Typography";
 import { ImageBlock } from "@/components/ui/ImageBlock";
 import { ProductRecipes } from "@/components/recipes/ProductRecipes";
 import { useMembership } from "@/hooks/useMembership";
+import { VariantSelector } from "@/components/shop/VariantSelector";
+import { ProductCard } from "@/components/shop/ProductCard";
 import { formatTierPrice, getBulkPacks, getProductVisibility, canAccessProduct } from "@/lib/membership";
-import { type ShopifyProduct, type ShopifyVariant, formatPrice } from "@/lib/shopify";
+import { type ShopifyProduct, type ShopifyVariant } from "@/lib/shopify";
 import { brand } from "@/lib/brand";
 import type { ProductStory, Recipe } from "@/lib/sanity";
 
@@ -123,23 +125,11 @@ export function ProductPageContent({
 
                 {!isLocked && (
                   <>
-                    {product.variants.length > 1 && (
-                      <div className="flex flex-wrap gap-3 sm:gap-4">
-                        {product.variants.map((variant) => (
-                          <button
-                            key={variant.id}
-                            onClick={() => setSelectedVariant(variant)}
-                            className={`min-h-[44px] px-0 py-2 text-xs font-light tracking-[0.2em] uppercase transition-colors duration-500 ${
-                              selectedVariant?.id === variant.id
-                                ? "text-[var(--color-text)] border-b border-[var(--color-text)]"
-                                : "text-[var(--color-muted)]"
-                            }`}
-                          >
-                            {variant.title}
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                    <VariantSelector
+                      variants={product.variants}
+                      selectedVariant={selectedVariant}
+                      onSelect={setSelectedVariant}
+                    />
 
                     {isB2B && bulkPacks.length > 0 && chefSupplyMode && (
                       <div className="space-y-3">
@@ -196,24 +186,7 @@ export function ProductPageContent({
             <H2 className="mb-10 text-center sm:mb-[var(--space-2xl)]">From the Same Harvest</H2>
             <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-[var(--space-2xl)] lg:mx-auto lg:max-w-4xl">
               {relatedProducts.slice(0, 3).map((related, i) => (
-                <ScrollReveal key={related.id} delay={i * 0.1}>
-                  <Link href={`/product/${related.handle}`} className="group block">
-                    <div className="relative overflow-hidden">
-                      <ImageBlock
-                        src={related.featuredImage?.url ?? ""}
-                        alt={related.title}
-                        aspectRatio="portrait"
-                        hoverZoom
-                      />
-                    </div>
-                    <h3 className="mt-5 font-serif text-lg font-normal tracking-[0.02em] transition-colors duration-500 group-hover:text-[var(--color-text)]/70 sm:mt-6 sm:text-xl">
-                      {related.title}
-                    </h3>
-                    <Price className="mt-2 block">
-                      {formatPrice(related.priceRange.minVariantPrice)}
-                    </Price>
-                  </Link>
-                </ScrollReveal>
+                <ProductCard key={related.id} product={related} index={i} />
               ))}
             </div>
           </Container>

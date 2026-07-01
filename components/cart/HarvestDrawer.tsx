@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/Button";
 import { brand } from "@/lib/brand";
 import { getCheckoutLabel, getCartLabel } from "@/lib/membership";
 import { useMembership } from "@/hooks/useMembership";
-import { formatPrice } from "@/lib/shopify";
+import { QuantitySelector } from "@/components/shop/QuantitySelector";
+import { PriceDisplay } from "@/components/shop/PriceDisplay";
 
 export function HarvestDrawer() {
   const { cart, isOpen, closeDrawer, updateQuantity, removeLine, checkout, isLoading } =
@@ -126,34 +127,15 @@ export function HarvestDrawer() {
                             {line.merchandise.origin}
                           </p>
                         )}
-                        <p className="mt-2 text-sm text-[var(--color-muted)]">
-                          {formatPrice(line.merchandise.price)}
-                        </p>
+                        <PriceDisplay money={line.merchandise.price} className="mt-2 text-sm text-[var(--color-muted)]" />
 
                         <div className="mt-3 flex items-center gap-4">
-                          <div className="flex items-center gap-3">
-                            <button
-                              type="button"
-                              disabled={isLoading}
-                              onClick={() => updateQuantity(line.id, line.quantity - 1)}
-                              className="flex h-8 w-8 items-center justify-center border border-[var(--color-border)] text-[var(--color-muted)] transition-colors hover:border-[var(--color-text)]/30 hover:text-[var(--color-text)] disabled:opacity-40"
-                              aria-label="Decrease quantity"
-                            >
-                              −
-                            </button>
-                            <span className="min-w-[1.5rem] text-center text-sm text-[var(--color-text)]">
-                              {line.quantity}
-                            </span>
-                            <button
-                              type="button"
-                              disabled={isLoading}
-                              onClick={() => updateQuantity(line.id, line.quantity + 1)}
-                              className="flex h-8 w-8 items-center justify-center border border-[var(--color-border)] text-[var(--color-muted)] transition-colors hover:border-[var(--color-text)]/30 hover:text-[var(--color-text)] disabled:opacity-40"
-                              aria-label="Increase quantity"
-                            >
-                              +
-                            </button>
-                          </div>
+                          <QuantitySelector
+                            quantity={line.quantity}
+                            disabled={isLoading}
+                            onDecrease={() => updateQuantity(line.id, line.quantity - 1)}
+                            onIncrease={() => updateQuantity(line.id, line.quantity + 1)}
+                          />
                           <button
                             type="button"
                             disabled={isLoading}
@@ -176,9 +158,7 @@ export function HarvestDrawer() {
                   <span className="text-xs tracking-[0.2em] uppercase text-[var(--color-muted)]">
                     Subtotal
                   </span>
-                  <span className="font-serif text-lg text-[var(--color-text)]">
-                    {formatPrice(cart.cost.subtotalAmount)}
-                  </span>
+                  <PriceDisplay money={cart.cost.subtotalAmount} className="font-serif text-lg text-[var(--color-text)]" />
                 </div>
                 <Button
                   variant="primary"

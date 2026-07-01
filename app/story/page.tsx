@@ -6,12 +6,14 @@ import { Excerpt } from "@/components/ui/Typography";
 import { ImageBlock } from "@/components/ui/ImageBlock";
 import { Footer } from "@/components/sections/Footer";
 import { brand } from "@/lib/brand";
+import { createPageMetadata } from "@/lib/metadata";
 import { getBrandStoryPage, getBrandStoryImageUrl, urlFor } from "@/lib/sanity";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Our Story",
   description: `${brand.tagline} — premium dates, olive oil, and raw honey from Mediterranean lands.`,
-};
+  path: "/story",
+});
 
 export default async function StoryPage() {
   const story = await getBrandStoryPage();

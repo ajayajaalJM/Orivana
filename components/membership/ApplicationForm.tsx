@@ -70,6 +70,11 @@ export function ApplicationForm({ tier }: ApplicationFormProps) {
       return;
     }
 
+    if (data.shopify) {
+      window.location.href = "/api/customer/account/auth?returnTo=/membership";
+      return;
+    }
+
     const result = await signIn("credentials", {
       email: form.email,
       password: form.password,

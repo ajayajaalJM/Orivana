@@ -6,6 +6,7 @@ import { H1, Excerpt, Body, Caption } from "@/components/ui/Typography";
 import { ImageBlock } from "@/components/ui/ImageBlock";
 import { Footer } from "@/components/sections/Footer";
 import { getJournalPost, getJournalImageUrl, getJournalArticleBody, urlFor } from "@/lib/sanity";
+import { createPageMetadata } from "@/lib/metadata";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -15,10 +16,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getJournalPost(slug);
   if (!post) return { title: "Article" };
-  return {
+  return createPageMetadata({
     title: post.title,
     description: post.excerpt,
-  };
+    path: `/journal/${slug}`,
+  });
 }
 
 export default async function JournalArticlePage({ params }: Props) {

@@ -7,12 +7,14 @@ import { H2, Excerpt } from "@/components/ui/Typography";
 import { ImageBlock } from "@/components/ui/ImageBlock";
 import { Footer } from "@/components/sections/Footer";
 import { brand } from "@/lib/brand";
+import { createPageMetadata } from "@/lib/metadata";
 import { getRecipes, getRecipeImageUrl, urlFor } from "@/lib/sanity";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: brand.recipesTitle,
   description: "Culinary editorial experiences from the Orivana atelier — recipes that begin with land and harvest.",
-};
+  path: "/recipes",
+});
 
 export default async function RecipesPage() {
   const recipes = await getRecipes(12);

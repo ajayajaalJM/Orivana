@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { signOut } from "next-auth/react";
-import type { Session } from "next-auth";
+import type { InnerCircleSession } from "@/lib/membership-session";
 import { Button } from "@/components/ui/Button";
 import { Caption, Excerpt, H2 } from "@/components/ui/Typography";
 import { HarvestMarket } from "@/components/membership/HarvestMarket";
@@ -19,7 +18,7 @@ import type { ShopifyProduct } from "@/lib/shopify";
 type DashboardTab = "overview" | "market" | "bulk" | "reorder" | "exclusive" | "profile";
 
 interface InnerCircleDashboardProps {
-  session: Session;
+  session: InnerCircleSession;
   orders: MemberOrder[];
   products: ShopifyProduct[];
 }
@@ -66,7 +65,16 @@ export function InnerCircleDashboard({ session, orders, products }: InnerCircleD
         </div>
         <button
           type="button"
-          onClick={() => signOut({ callbackUrl: "/membership" })}
+          onClick={async () => {
+            await fetch("/api/customer/account/logout", { method: "POST" });
+            await fetch("/api/customer/logout", { method: "POST" });
+            if (session.source === "nextauth") {
+              const { signOut } = await import("next-auth/react");
+              signOut({ callbackUrl: "/membership" });
+            } else {
+              window.location.href = "/membership";
+            }
+          }}
           className="shrink-0 text-xs tracking-[0.2em] uppercase text-[var(--color-muted)] transition-colors hover:text-[var(--color-text)]"
         >
           Sign Out

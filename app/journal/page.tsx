@@ -7,12 +7,14 @@ import { H2, Excerpt, Caption } from "@/components/ui/Typography";
 import { ImageBlock } from "@/components/ui/ImageBlock";
 import { Footer } from "@/components/sections/Footer";
 import { brand } from "@/lib/brand";
+import { createPageMetadata } from "@/lib/metadata";
 import { getJournalPosts, getJournalImageUrl, urlFor } from "@/lib/sanity";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: brand.journalTitle,
   description: "Stories of land, harvest, and Mediterranean food heritage from Orivana.",
-};
+  path: "/journal",
+});
 
 export default async function JournalPage() {
   const posts = await getJournalPosts(12);
