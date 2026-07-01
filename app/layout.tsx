@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import { Nav } from "@/components/ui/Nav";
 import { Providers } from "@/components/Providers";
-import { brand } from "@/lib/brand";
-import { getSiteMetadataBase } from "@/lib/metadata";
+import { getRootMetadata } from "@/lib/metadata";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -20,23 +19,7 @@ const inter = Inter({
   display: "swap",
 });
 
-const siteMetadataBase = getSiteMetadataBase();
-
-export const metadata: Metadata = {
-  ...(siteMetadataBase ? { metadataBase: siteMetadataBase } : {}),
-  title: {
-    default: `Orivana — ${brand.tagline}`,
-    template: "%s | Orivana",
-  },
-  description: brand.description,
-  openGraph: {
-    title: "Orivana",
-    description: brand.tagline,
-    type: "website",
-    ...(siteMetadataBase ? { url: siteMetadataBase.toString() } : {}),
-  },
-  alternates: siteMetadataBase ? { canonical: siteMetadataBase.toString() } : undefined,
-};
+export const metadata: Metadata = getRootMetadata();
 
 export const viewport = {
   width: "device-width",
