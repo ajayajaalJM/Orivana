@@ -23,7 +23,7 @@ export function CollectionGrid({ collections }: CollectionGridProps) {
           <H2>{brand.collectionsTitle}</H2>
         </ScrollReveal>
 
-        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:gap-10">
           {collections.map((collection, i) => (
             <ScrollReveal key={collection.handle} delay={i * 0.1}>
               <CollectionShowcaseCard collection={collection} />
