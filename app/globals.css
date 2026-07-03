@@ -11,6 +11,22 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+html.scroll-snap-home {
+  scroll-snap-type: y proximity;
+  scroll-padding-top: calc(var(--nav-height) + env(safe-area-inset-top, 0px));
+}
+
+.scroll-snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.scroll-snap-home {
+    scroll-snap-type: none;
+  }
+}
+
 body {
   font-family: var(--font-sans), system-ui, sans-serif;
   font-weight: 300;

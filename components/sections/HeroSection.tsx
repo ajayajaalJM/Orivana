@@ -26,7 +26,7 @@ export function HeroSection({
   const bgUrl = backgroundImageUrl || getHeroBackgroundUrl();
 
   return (
-    <section className="relative h-[100dvh] min-h-[100dvh] w-full overflow-hidden">
+    <section className="scroll-snap-section relative h-[100dvh] min-h-[100dvh] w-full overflow-hidden">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
