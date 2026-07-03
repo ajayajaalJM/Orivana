@@ -13,6 +13,7 @@ interface ImageBlockProps {
   fill?: boolean;
   parallax?: boolean;
   hoverZoom?: boolean;
+  objectPosition?: string;
 }
 
 const aspectClasses = {
@@ -32,6 +33,7 @@ export function ImageBlock({
   fill = false,
   parallax = false,
   hoverZoom = false,
+  objectPosition = "center",
 }: ImageBlockProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [parallaxEnabled, setParallaxEnabled] = useState(false);
@@ -70,6 +72,7 @@ export function ImageBlock({
           priority={priority}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 50vw"
           className="object-cover img-editorial"
+          style={{ objectPosition }}
         />
       </motion.div>
     </div>

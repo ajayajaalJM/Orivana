@@ -93,7 +93,7 @@ export const PERMANENT_COLLECTIONS: CollectionEditorial[] = [
       ],
     },
     heroImage: img(images.mediterraneanSpread, 1920),
-    gridImage: img(images.mediterraneanSpread, 800),
+    gridImage: `${images.mediterraneanSpread}?w=800&h=1000&fit=crop&crop=entropy&q=80`,
     featuredRecipeSlug: "mediterranean-harvest-board",
     journalSlugs: ["palm-groves-of-the-sahara", "silent-work-of-olive-harvesting"],
   },
