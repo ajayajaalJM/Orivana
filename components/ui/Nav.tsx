@@ -75,7 +75,11 @@ export function Nav() {
         <div className="mx-auto flex max-w-[var(--max-width)] items-center justify-between px-6 py-4 lg:px-8 lg:py-7">
           <Link
             href="/"
-            className={`relative z-[60] shrink-0 font-serif text-sm tracking-[0.2em] sm:tracking-[0.28em] lg:text-lg lg:tracking-[0.32em] ${navTextClass}`}
+            className={`relative z-[60] shrink-0 font-serif tracking-[0.2em] sm:tracking-[0.28em] ${
+              isHome
+                ? "text-base sm:text-lg lg:text-xl xl:text-2xl lg:tracking-[0.34em] xl:tracking-[0.38em]"
+                : "text-sm lg:text-lg lg:tracking-[0.32em]"
+            } ${navTextClass}`}
           >
             ORIVANA
           </Link>

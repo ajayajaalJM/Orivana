@@ -1,3 +1,4 @@
+import { getAllCollectionHandles } from "../collections";
 import { shopifyFetch } from "./graphql";
 import { isShopifyConfigured } from "./config";
 import { isComingSoonProduct } from "../product-availability";
@@ -112,22 +113,17 @@ function filterProductsForCollection(products: ShopifyProduct[], handle: string)
 }
 
 export async function getCollections(first = 6): Promise<ShopifyCollection[]> {
+  const handles = getAllCollectionHandles().slice(0, first);
+
   if (!isShopifyConfigured()) {
-    return MOCK_COLLECTIONS.slice(0, first);
+    return MOCK_COLLECTIONS.filter((collection) =>
+      handles.includes(collection.handle as (typeof handles)[number])
+    );
   }
 
   try {
-    const data = await shopifyFetch<{ collections: { edges: { node: ShopifyCollection }[] } }>(
-      `query getCollections($first: Int!) {
-        collections(first: $first) {
-          edges { node { ${COLLECTION_FIELDS} } }
-        }
-      }`,
-      { first },
-      { tags: ["collections"], revalidate: 120 }
-    );
-
-    return data.collections.edges.map((e) => e.node);
+    const collections = await Promise.all(handles.map((handle) => getCollection(handle)));
+    return collections.filter((collection): collection is ShopifyCollection => collection !== null);
   } catch {
     return [];
   }

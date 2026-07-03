@@ -1,8 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Button } from "@/components/ui/Button";
 import { getHeroBackgroundUrl } from "@/lib/sanity";
 
 interface HeroSectionProps {
@@ -13,6 +13,9 @@ interface HeroSectionProps {
   backgroundImageUrl?: string;
 }
 
+const heroCtaClass =
+  "inline-flex min-h-[48px] w-full items-center justify-center rounded-[var(--radius-button)] border border-[var(--color-on-image)]/60 bg-[var(--color-on-image)]/10 px-8 py-3.5 text-[11px] font-light tracking-[0.14em] uppercase text-[var(--color-on-image)] transition-colors duration-500 hover:border-[var(--color-on-image)] hover:bg-[var(--color-on-image)]/20 sm:w-auto";
+
 export function HeroSection({
   title,
   subtitle,
@@ -21,10 +24,6 @@ export function HeroSection({
   backgroundImageUrl,
 }: HeroSectionProps) {
   const bgUrl = backgroundImageUrl || getHeroBackgroundUrl();
-
-  const scrollToFeatured = () => {
-    document.getElementById("featured-harvest")?.scrollIntoView({ behavior: "smooth" });
-  };
 
   return (
     <section className="relative h-screen w-full overflow-hidden">
@@ -65,7 +64,7 @@ export function HeroSection({
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-[95vw] font-serif text-[var(--text-hero)] font-normal tracking-[0.03em] text-[var(--color-on-image)] sm:max-w-none sm:tracking-[0.05em]"
+          className="max-w-[95vw] font-serif text-[var(--text-hero-display)] font-normal leading-[0.92] tracking-[0.08em] text-[var(--color-on-image)] sm:max-w-none sm:tracking-[0.12em] md:tracking-[0.14em]"
         >
           {title}
         </motion.h1>
@@ -74,7 +73,7 @@ export function HeroSection({
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-6 max-w-xs font-sans text-[10px] font-light leading-relaxed tracking-[0.25em] uppercase text-[var(--color-on-image)]/85 sm:mt-8 sm:max-w-md sm:text-xs md:text-sm md:tracking-[0.3em]"
+          className="mt-8 max-w-sm font-sans text-xs font-light leading-relaxed tracking-[0.22em] uppercase text-[var(--color-on-image)]/90 sm:mt-10 sm:max-w-lg sm:text-sm sm:tracking-[0.28em] md:text-base md:tracking-[0.32em]"
         >
           {subtitle}
         </motion.p>
@@ -83,11 +82,11 @@ export function HeroSection({
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-10 w-full max-w-xs sm:mt-14 sm:max-w-none"
+          className="mt-12 flex w-full max-w-xs justify-center sm:mt-16 sm:max-w-none"
         >
-          <Button onClick={scrollToFeatured} fullWidthMobile className="w-full sm:w-auto !border-[var(--color-on-image)]/60 !bg-[var(--color-on-image)]/10 !text-[var(--color-on-image)] hover:!border-[var(--color-on-image)] hover:!bg-[var(--color-on-image)]/20">
+          <Link href="/collections" className={heroCtaClass}>
             {ctaText}
-          </Button>
+          </Link>
         </motion.div>
       </div>
 

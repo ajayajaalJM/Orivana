@@ -41,11 +41,11 @@ export default function NotFound() {
               moved, or the address was mistyped.
             </Excerpt>
 
-            <div className="mt-10 flex w-full max-w-xs flex-col items-stretch gap-4 sm:mx-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-6">
-              <Link href="/" className={`${primaryCta} w-full sm:w-auto`}>
+            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
+              <Link href="/" className={`${primaryCta} w-full max-w-[280px] sm:w-auto`}>
                 Return Home
               </Link>
-              <Link href="/shop" className={`${secondaryCta} w-full sm:w-auto`}>
+              <Link href="/collections" className={`${secondaryCta} w-full max-w-[280px] sm:w-auto`}>
                 {brand.exploreCollection}
               </Link>
             </div>
