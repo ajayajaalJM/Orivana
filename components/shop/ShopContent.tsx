@@ -8,7 +8,11 @@ import {
   EMPTY_FILTERS,
   type RefineFilters,
 } from "@/components/collections/RefineSelectionDrawer";
-import { productMatchesCollection, type ShopifyProduct } from "@/lib/shopify";
+import {
+  limitComingSoonByCollection,
+  productMatchesCollection,
+  type ShopifyProduct,
+} from "@/lib/shopify";
 
 interface ShopContentProps {
   products: ShopifyProduct[];
@@ -23,6 +27,7 @@ export function ShopContent({ products }: ShopContentProps) {
     if (activeCollection) {
       result = result.filter((p) => productMatchesCollection(p, activeCollection));
     }
+    result = limitComingSoonByCollection(result);
     return applyRefineFilters(result, filters);
   }, [products, activeCollection, filters]);
 

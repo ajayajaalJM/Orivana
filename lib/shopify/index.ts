@@ -41,7 +41,9 @@ export {
   getCollection,
   getCollectionProducts,
   resolveCollectionHandle,
+  getPrimaryCollectionHandle,
   productMatchesCollection,
+  limitComingSoonByCollection,
 } from "./collections";
 
 export {

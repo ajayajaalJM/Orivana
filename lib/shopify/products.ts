@@ -132,7 +132,7 @@ export function formatPrice(money: ShopifyMoney): string {
   }).format(parseFloat(money.amount));
 }
 
-async function fetchProductsFromStorefront(first: number): Promise<ShopifyProduct[]> {
+export async function fetchProductsFromStorefront(first: number): Promise<ShopifyProduct[]> {
   const data = await shopifyFetch<{ products: { edges: { node: RawProduct }[] } }>(
     `query getProducts($first: Int!) {
       products(first: $first) {
