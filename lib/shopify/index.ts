@@ -34,6 +34,7 @@ export {
   getProductsByHandles,
   formatPrice,
   normalizeProduct,
+  getProductFeaturedImageUrl,
 } from "./products";
 
 export {

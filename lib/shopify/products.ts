@@ -1,4 +1,5 @@
 import type { BulkPack, ProductVisibility } from "../membership-types";
+import { images, img } from "../images";
 import {
   getProductAvailabilityLabel,
   isProductPurchasable,
@@ -96,6 +97,61 @@ function applyMetafields(product: ShopifyProduct, metafields?: (ShopifyMetafield
   };
 }
 
+function getCategoryFallbackImage(product: ShopifyProduct): ShopifyImage | null {
+  const type = product.productType ?? "";
+  const tags = product.tags ?? [];
+  const collections = product.collections ?? [];
+
+  if (type.includes("Honey") || tags.includes("honey") || collections.includes("honey")) {
+    return { url: img(images.honeyDipper), altText: product.title };
+  }
+  if (type.includes("Olive Oil") || tags.includes("olive-oil") || collections.includes("olive-oil")) {
+    return { url: img(images.oliveOil), altText: product.title };
+  }
+  if (type.includes("Date") || tags.includes("dates") || collections.includes("dates")) {
+    return { url: img(images.datesBowl), altText: product.title };
+  }
+  if (type.includes("Gift") || tags.includes("gift") || collections.includes("gift-collections")) {
+    return { url: img(images.mediterraneanSpread), altText: product.title };
+  }
+
+  return null;
+}
+
+/** Ensure every product has a display image when Shopify media is missing. */
+function resolveProductImages(product: ShopifyProduct): ShopifyProduct {
+  const mock = findMockProduct(product.handle);
+  const featuredUrl = product.featuredImage?.url?.trim();
+  const galleryUrl = product.images.find((image) => image.url?.trim())?.url?.trim();
+  const mockUrl = mock?.featuredImage?.url?.trim();
+  const categoryFallback = getCategoryFallbackImage(product)?.url;
+  const url = featuredUrl || galleryUrl || mockUrl || categoryFallback;
+
+  if (!url) return product;
+
+  const altText =
+    product.featuredImage?.altText?.trim() ||
+    product.images[0]?.altText?.trim() ||
+    mock?.featuredImage?.altText ||
+    product.title;
+
+  const featuredImage: ShopifyImage = {
+    url,
+    altText,
+    width: product.featuredImage?.width ?? mock?.featuredImage?.width,
+    height: product.featuredImage?.height ?? mock?.featuredImage?.height,
+  };
+
+  const resolvedImages =
+    product.images.length > 0 ? product.images : mock?.images?.length ? mock.images : [featuredImage];
+
+  return { ...product, featuredImage, images: resolvedImages };
+}
+
+export function getProductFeaturedImageUrl(product: ShopifyProduct): string {
+  return product.featuredImage?.url?.trim() ?? "";
+}
+
 export function normalizeProduct(raw: RawProduct): ShopifyProduct {
   const images = raw.images?.edges?.map((e) => e.node) ?? [];
   const variants = raw.variants?.edges?.map((e) => e.node) ?? [];
@@ -118,11 +174,12 @@ export function normalizeProduct(raw: RawProduct): ShopifyProduct {
   };
 
   const withMetafields = applyMetafields(product, raw.metafields);
-
-  return {
+  const withAvailability = {
     ...withMetafields,
     availability: getProductAvailabilityLabel(withMetafields),
   };
+
+  return resolveProductImages(withAvailability);
 }
 
 export function formatPrice(money: ShopifyMoney): string {

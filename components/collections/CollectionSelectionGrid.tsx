@@ -5,7 +5,7 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { ImageBlock } from "@/components/ui/ImageBlock";
 import { Caption } from "@/components/ui/Typography";
 import { brand } from "@/lib/brand";
-import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
+import { formatPrice, getProductFeaturedImageUrl, type ShopifyProduct } from "@/lib/shopify";
 import {
   getProductShortLabel,
   getProductVariantLabels,
@@ -36,7 +36,7 @@ export function CollectionSelectionGrid({ products }: CollectionSelectionGridPro
             <Link href={`/product/${product.handle}`} className="group block">
               <div className="relative overflow-hidden bg-[var(--color-surface)]">
                 <ImageBlock
-                  src={product.featuredImage?.url ?? ""}
+                  src={getProductFeaturedImageUrl(product)}
                   alt={product.title}
                   aspectRatio="tall"
                   hoverZoom={!comingSoon}

@@ -22,7 +22,7 @@
 
   /* Font scale — mobile-first */
   --text-hero: clamp(2.75rem, 11vw, 6rem);
-  --text-hero-display: clamp(3.5rem, 18vw, 11.5rem);
+  --text-hero-display: 1.125rem;
   --text-h2: clamp(1.875rem, 5.5vw, 3.5rem);
   --text-h3: clamp(1.375rem, 3.5vw, 2rem);
   --text-body: clamp(1rem, 2.5vw, 1.125rem);
@@ -53,15 +53,27 @@
   --duration-hover: 0.45s;
 }
 
+@media (min-width: 640px) {
+  :root {
+    --text-hero-display: 1.25rem;
+  }
+}
+
 @media (min-width: 768px) {
   :root {
     --text-hero: clamp(4rem, 9vw, 6rem);
-    --text-hero-display: clamp(7rem, 20vw, 15rem);
+    --text-hero-display: 1.375rem;
     --text-h2: clamp(2.5rem, 5vw, 3.5rem);
     --space-lg: 40px;
     --space-xl: 64px;
     --space-2xl: 96px;
     --space-3xl: 140px;
     --nav-height: 88px;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --text-hero-display: 1.625rem;
   }
 }

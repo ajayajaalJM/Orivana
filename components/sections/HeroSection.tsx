@@ -64,7 +64,7 @@ export function HeroSection({
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-[98vw] break-words font-serif text-[var(--text-hero-display)] font-normal leading-[0.9] tracking-[0.06em] text-[var(--color-on-image)] sm:max-w-none sm:leading-[0.88] sm:tracking-[0.14em] md:tracking-[0.16em] lg:tracking-[0.18em]"
+          className="hero-wordmark w-full max-w-[100vw] break-words"
         >
           {title}
         </motion.h1>
@@ -73,7 +73,7 @@ export function HeroSection({
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-6 max-w-sm font-sans text-[11px] font-light leading-relaxed tracking-[0.16em] uppercase text-[var(--color-on-image)]/90 sm:mt-10 sm:max-w-lg sm:text-sm sm:tracking-[0.28em] md:text-base md:tracking-[0.32em]"
+          className="mt-6 max-w-sm font-sans text-[11px] font-light leading-relaxed tracking-[0.16em] uppercase text-[var(--color-on-image)]/80 sm:mt-8 sm:max-w-lg sm:text-sm sm:tracking-[0.28em] md:text-base md:tracking-[0.32em]"
         >
           {subtitle}
         </motion.p>

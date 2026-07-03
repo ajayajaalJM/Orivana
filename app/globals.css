@@ -83,6 +83,33 @@ section.page-top {
   font-weight: 400;
 }
 
+.hero-wordmark {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: var(--text-hero-display);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.2em;
+  color: var(--color-text);
+}
+
+@media (min-width: 640px) {
+  .hero-wordmark {
+    letter-spacing: 0.28em;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-wordmark {
+    letter-spacing: 0.34em;
+  }
+}
+
+@media (min-width: 1280px) {
+  .hero-wordmark {
+    letter-spacing: 0.38em;
+  }
+}
+
 .font-sans {
   font-family: var(--font-sans), system-ui, sans-serif;
   font-weight: 300;
