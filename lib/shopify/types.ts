@@ -1,4 +1,5 @@
 import type { BulkPack, MemberTier, ProductVisibility } from "../membership-types";
+import type { ProductAvailabilityStatus } from "../product-availability";
 
 export interface ShopifyImage {
   url: string;
@@ -55,6 +56,7 @@ export interface ShopifyProduct {
   producer?: string;
   harvest?: string;
   availability?: string;
+  availabilityStatus?: ProductAvailabilityStatus;
   giftReady?: boolean;
   packaging?: string;
   relatedProductHandles?: string[];

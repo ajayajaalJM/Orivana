@@ -1,5 +1,9 @@
 import type { BulkPack, ProductVisibility } from "../membership-types";
 import {
+  getProductAvailabilityLabel,
+  type ProductAvailabilityStatus,
+} from "../product-availability";
+import {
   PRODUCT_METAFIELDS_QUERY,
   shopifyFetch,
 } from "./graphql";
@@ -71,6 +75,7 @@ function applyMetafields(product: ShopifyProduct, metafields?: (ShopifyMetafield
 
   const visibility = map.get("visibility") as ProductVisibility | undefined;
   const giftReady = map.get("gift_ready");
+  const availabilityStatus = map.get("availability_status") as ProductAvailabilityStatus | undefined;
 
   return {
     ...product,
@@ -81,6 +86,7 @@ function applyMetafields(product: ShopifyProduct, metafields?: (ShopifyMetafield
     harvest: map.get("harvest") ?? product.harvest,
     packaging: map.get("packaging") ?? product.packaging,
     visibility: visibility ?? product.visibility,
+    availabilityStatus: availabilityStatus ?? product.availabilityStatus,
     giftReady: giftReady === "true" || giftReady === "1" ? true : product.giftReady ?? product.tags.includes("gift"),
     relatedProductHandles: parseJsonList(map.get("related_products")),
     recipeSlugs: parseJsonList(map.get("recipes")),
@@ -108,10 +114,14 @@ export function normalizeProduct(raw: RawProduct): ShopifyProduct {
     variants,
     collections,
     collection: collections[0],
-    availability: variants.some((v) => v.availableForSale) ? "In Season" : "Sold Out",
   };
 
-  return applyMetafields(product, raw.metafields);
+  const withMetafields = applyMetafields(product, raw.metafields);
+
+  return {
+    ...withMetafields,
+    availability: getProductAvailabilityLabel(withMetafields),
+  };
 }
 
 export function formatPrice(money: ShopifyMoney): string {

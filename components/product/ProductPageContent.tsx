@@ -15,6 +15,11 @@ import { useMembership } from "@/hooks/useMembership";
 import { VariantSelector } from "@/components/shop/VariantSelector";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { formatTierPrice, getBulkPacks, getProductVisibility, canAccessProduct } from "@/lib/membership";
+import {
+  getProductShortLabel,
+  isComingSoonProduct,
+  isProductPurchasable,
+} from "@/lib/product-availability";
 import { type ShopifyProduct, type ShopifyVariant } from "@/lib/shopify";
 import { brand } from "@/lib/brand";
 import type { ProductStory, Recipe } from "@/lib/sanity";
@@ -40,6 +45,7 @@ export function ProductPageContent({
 
   const visibility = getProductVisibility(product);
   const isLocked = !canAccessProduct(tier, visibility);
+  const comingSoon = isComingSoonProduct(product);
   const bulkPacks = getBulkPacks(product);
   const variantIndex = product.variants.findIndex((v) => v.id === selectedVariant?.id);
   const displayPrice = formatTierPrice(product, tier, Math.max(0, variantIndex));
@@ -49,6 +55,37 @@ export function ProductPageContent({
     : product.featuredImage
       ? [product.featuredImage]
       : [];
+
+  if (comingSoon) {
+    return (
+      <Section className="page-top">
+        <Container>
+          <ScrollReveal className="mx-auto max-w-lg text-center">
+            <div className="relative mx-auto mb-10 max-w-sm overflow-hidden">
+              <ImageBlock
+                src={images[0]?.url ?? ""}
+                alt={getProductShortLabel(product)}
+                aspectRatio="portrait"
+                priority
+                className="opacity-80 saturate-[0.65]"
+              />
+              <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-[var(--color-bg)]/85 via-transparent to-transparent pb-6">
+                <Caption className="tracking-[0.22em]">{brand.comingSoon}</Caption>
+              </div>
+            </div>
+            <H1 className="page-title">{getProductShortLabel(product)}</H1>
+            <Excerpt className="mx-auto mt-6 max-w-sm">{brand.comingSoonDescription}</Excerpt>
+            <Link
+              href="/collections/dates"
+              className="mt-10 inline-block text-[10px] tracking-[0.2em] uppercase text-[var(--color-muted)] transition-colors hover:text-[var(--color-text)]"
+            >
+              Explore our dates
+            </Link>
+          </ScrollReveal>
+        </Container>
+      </Section>
+    );
+  }
 
   return (
     <>
@@ -155,7 +192,7 @@ export function ProductPageContent({
                           variantId={selectedVariant.id}
                           fullWidthMobile
                           className="w-full sm:w-auto"
-                          disabled={!selectedVariant.availableForSale}
+                          disabled={!isProductPurchasable(product) || !selectedVariant.availableForSale}
                         />
                       )}
                     </div>

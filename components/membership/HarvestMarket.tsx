@@ -14,6 +14,11 @@ import {
   getLockedProducts,
   getProductVisibility,
 } from "@/lib/membership";
+import {
+  getProductShortLabel,
+  isComingSoonProduct,
+  isProductPurchasable,
+} from "@/lib/product-availability";
 import type { ShopifyProduct } from "@/lib/shopify";
 
 interface HarvestMarketProps {
@@ -51,9 +56,10 @@ function ProductCard({
   const variant = product.variants[0];
   const visibility = getProductVisibility(product);
   const bulkPacks = getBulkPacks(product);
+  const comingSoon = isComingSoonProduct(product);
 
   return (
-    <article className={`card-surface border border-[var(--color-border)] ${locked ? "opacity-75" : ""}`}>
+    <article className={`card-surface border border-[var(--color-border)] ${locked || comingSoon ? "opacity-75" : ""}`}>
       <Link href={locked ? "/membership" : `/product/${product.handle}`} className="group block">
         <div className="relative aspect-[4/5] overflow-hidden">
           {product.featuredImage && (
@@ -62,10 +68,17 @@ function ProductCard({
               alt={product.title}
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
-              className={`object-cover img-editorial transition-transform duration-700 ${locked ? "grayscale-[30%]" : "group-hover:scale-[1.03]"}`}
+              className={`object-cover img-editorial transition-transform duration-700 ${
+                locked || comingSoon ? "saturate-[0.65]" : "group-hover:scale-[1.03]"
+              }`}
             />
           )}
-          {locked && (
+          {comingSoon && (
+            <div className="absolute inset-0 flex items-end bg-gradient-to-t from-[var(--color-bg)]/80 via-transparent to-transparent p-5">
+              <Caption className="tracking-[0.22em]">{brand.comingSoon}</Caption>
+            </div>
+          )}
+          {locked && !comingSoon && (
             <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-bg)]/60">
               <Caption className="text-center px-4">
                 {visibility === "trade" ? brand.tradeOnlyProduct : brand.lockedProduct}
@@ -74,11 +87,13 @@ function ProductCard({
           )}
         </div>
         <div className="p-5 sm:p-6">
-          {product.origin && (
+          {!comingSoon && product.origin && (
             <Caption className="mb-2 block text-[var(--color-olive)]">{product.origin}</Caption>
           )}
-          <H3 className="!text-lg sm:!text-xl">{product.title}</H3>
-          {!locked && (
+          <H3 className="!text-lg sm:!text-xl">
+            {comingSoon ? getProductShortLabel(product) : product.title}
+          </H3>
+          {!locked && !comingSoon && (
             <p className="mt-2 font-serif text-lg text-[var(--color-accent)]">
               {formatTierPrice(product, tier)}
               {tier && tier !== "individual" && (
@@ -91,7 +106,7 @@ function ProductCard({
         </div>
       </Link>
 
-      {!locked && variant && (
+      {!locked && !comingSoon && variant && isProductPurchasable(product) && (
         <div className="border-t border-[var(--color-border)] px-5 pb-5 sm:px-6 sm:pb-6">
           {bulkPacks.length > 0 && tier && tier !== "individual" && (
             <BulkPackSelector bulkPacks={bulkPacks} variantId={variant.id} />

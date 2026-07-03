@@ -97,6 +97,8 @@ export const brand = {
   reorderCenter: "Reorder Center",
   lockedProduct: "Inner Circle Exclusive",
   tradeOnlyProduct: "Trade Access Required",
+  comingSoon: "Coming Soon",
+  comingSoonDescription: "This harvest will return to the collection soon.",
   requestPricingSheet: "Request Pricing Sheet",
   downloadCatalog: "Download Product Catalog",
   accountManagerRequest: "Request Account Manager",
