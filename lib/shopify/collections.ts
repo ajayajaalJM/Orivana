@@ -1,4 +1,4 @@
-import { getAllCollectionHandles } from "../collections";
+import { getAllCollectionHandles, getFallbackCollectionEditorial } from "../collections";
 import { shopifyFetch } from "./graphql";
 import { isShopifyConfigured } from "./config";
 import { isComingSoonProduct } from "../product-availability";
@@ -9,6 +9,13 @@ import {
 } from "./mock-data";
 import { fetchProductsFromStorefront } from "./products";
 import type { ShopifyCollection, ShopifyProduct } from "./types";
+
+export interface CollectionShowcaseItem {
+  handle: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+}
 
 const COLLECTION_FIELDS = `
   id handle title description
@@ -112,6 +119,48 @@ function filterProductsForCollection(products: ShopifyProduct[], handle: string)
   );
 }
 
+function editorialToShowcase(handle: string): CollectionShowcaseItem | null {
+  const editorial = getFallbackCollectionEditorial(handle);
+  if (!editorial) return null;
+
+  return {
+    handle: editorial.handle,
+    title: editorial.title,
+    description: editorial.heroIntro,
+    imageUrl: editorial.gridImage,
+  };
+}
+
+/** Homepage and collections landing — always four categories with curated imagery. */
+export async function getCollectionShowcaseItems(): Promise<CollectionShowcaseItem[]> {
+  const handles = getAllCollectionHandles();
+
+  if (!isShopifyConfigured()) {
+    return handles
+      .map((handle) => editorialToShowcase(handle))
+      .filter((item): item is CollectionShowcaseItem => item !== null);
+  }
+
+  const items = await Promise.all(
+    handles.map(async (handle) => {
+      const editorial = editorialToShowcase(handle);
+      if (!editorial) return null;
+
+      const shopify = await getCollection(handle);
+      if (!shopify) return editorial;
+
+      return {
+        handle: editorial.handle,
+        title: shopify.title?.trim() || editorial.title,
+        description: shopify.description?.trim() || editorial.description,
+        imageUrl: shopify.image?.url?.trim() || editorial.imageUrl,
+      };
+    })
+  );
+
+  return items.filter((item): item is CollectionShowcaseItem => item !== null);
+}
+
 export async function getCollections(first = 6): Promise<ShopifyCollection[]> {
   const handles = getAllCollectionHandles().slice(0, first);
 
@@ -122,10 +171,41 @@ export async function getCollections(first = 6): Promise<ShopifyCollection[]> {
   }
 
   try {
-    const collections = await Promise.all(handles.map((handle) => getCollection(handle)));
+    const collections = await Promise.all(
+      handles.map(async (handle) => {
+        const shopify = await getCollection(handle);
+        if (shopify) return shopify;
+
+        const editorial = getFallbackCollectionEditorial(handle);
+        if (!editorial) return null;
+
+        return {
+          id: `editorial-${handle}`,
+          handle: editorial.handle,
+          title: editorial.title,
+          description: editorial.heroIntro,
+          image: {
+            url: editorial.gridImage,
+            altText: editorial.title,
+            width: 800,
+            height: 1000,
+          },
+        } satisfies ShopifyCollection;
+      })
+    );
+
     return collections.filter((collection): collection is ShopifyCollection => collection !== null);
   } catch {
-    return [];
+    return handles
+      .map((handle) => editorialToShowcase(handle))
+      .filter((item): item is CollectionShowcaseItem => item !== null)
+      .map((item) => ({
+        id: `editorial-${item.handle}`,
+        handle: item.handle,
+        title: item.title,
+        description: item.description,
+        image: { url: item.imageUrl, altText: item.title, width: 800, height: 1000 },
+      }));
   }
 }
 

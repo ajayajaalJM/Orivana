@@ -22,7 +22,7 @@
 
   /* Font scale — mobile-first */
   --text-hero: clamp(2.75rem, 11vw, 6rem);
-  --text-hero-display: clamp(4.25rem, 16vw, 9.5rem);
+  --text-hero-display: clamp(5rem, 22vw, 11.5rem);
   --text-h2: clamp(2rem, 6vw, 3.5rem);
   --text-h3: clamp(1.5rem, 4vw, 2rem);
   --text-body: clamp(1rem, 2.5vw, 1.125rem);
@@ -56,7 +56,7 @@
 @media (min-width: 768px) {
   :root {
     --text-hero: clamp(4rem, 9vw, 6rem);
-    --text-hero-display: clamp(5.5rem, 14vw, 11rem);
+    --text-hero-display: clamp(7rem, 20vw, 15rem);
     --text-h2: clamp(2.5rem, 5vw, 3.5rem);
     --space-lg: 40px;
     --space-xl: 64px;

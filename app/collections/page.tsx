@@ -3,6 +3,7 @@ import { CollectionsLanding } from "@/components/collections/CollectionsLanding"
 import { Footer } from "@/components/sections/Footer";
 import { brand } from "@/lib/brand";
 import { createPageMetadata } from "@/lib/metadata";
+import { getCollectionShowcaseItems } from "@/lib/shopify";
 
 export const metadata: Metadata = createPageMetadata({
   title: brand.collectionsLandingTitle,
@@ -10,10 +11,12 @@ export const metadata: Metadata = createPageMetadata({
   path: "/collections",
 });
 
-export default function CollectionsPage() {
+export default async function CollectionsPage() {
+  const collections = await getCollectionShowcaseItems();
+
   return (
     <>
-      <CollectionsLanding />
+      <CollectionsLanding collections={collections} />
       <Footer />
     </>
   );

@@ -7,7 +7,7 @@ import { RecipePreview } from "@/components/sections/RecipePreview";
 import { MembershipCTA } from "@/components/sections/MembershipCTA";
 import { Footer } from "@/components/sections/Footer";
 import { getHomepage, getJournalPosts, getRecipes, getHeroBackgroundUrl, getBrandStoryImageUrl, urlFor } from "@/lib/sanity";
-import { getFeaturedProduct, getCollections } from "@/lib/shopify";
+import { getCollectionShowcaseItems, getFeaturedProduct } from "@/lib/shopify";
 import { getFeaturedProductHandle } from "@/lib/shopify/config";
 
 export const revalidate = 60;
@@ -19,7 +19,7 @@ export default async function HomePage() {
   const featuredProduct = await getFeaturedProduct(featuredHandle);
 
   const [collections, journalPosts, recipes] = await Promise.all([
-    getCollections(6),
+    getCollectionShowcaseItems(),
     getJournalPosts(3),
     getRecipes(3),
   ]);

@@ -1,18 +1,20 @@
 "use client";
 
+import { CollectionShowcaseCard } from "@/components/collections/CollectionShowcaseCard";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { H2, Caption } from "@/components/ui/Typography";
-import { CollectionCard } from "@/components/shop/CollectionCard";
 import { brand } from "@/lib/brand";
-import type { ShopifyCollection } from "@/lib/shopify";
+import type { CollectionShowcaseItem } from "@/components/collections/CollectionShowcaseCard";
 
 interface CollectionGridProps {
-  collections: ShopifyCollection[];
+  collections: CollectionShowcaseItem[];
 }
 
 export function CollectionGrid({ collections }: CollectionGridProps) {
+  if (collections.length === 0) return null;
+
   return (
     <Section>
       <Container wide>
@@ -21,14 +23,10 @@ export function CollectionGrid({ collections }: CollectionGridProps) {
           <H2>{brand.collectionsTitle}</H2>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:gap-10">
           {collections.map((collection, i) => (
-            <ScrollReveal
-              key={collection.id}
-              delay={i * 0.12}
-              className={i === 0 ? "sm:col-span-2 lg:col-span-2 lg:row-span-1" : ""}
-            >
-              <CollectionCard collection={collection} index={i} />
+            <ScrollReveal key={collection.handle} delay={i * 0.1}>
+              <CollectionShowcaseCard collection={collection} index={i} />
             </ScrollReveal>
           ))}
         </div>

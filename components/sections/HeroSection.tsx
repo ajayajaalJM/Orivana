@@ -64,7 +64,7 @@ export function HeroSection({
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-[95vw] font-serif text-[var(--text-hero-display)] font-normal leading-[0.92] tracking-[0.08em] text-[var(--color-on-image)] sm:max-w-none sm:tracking-[0.12em] md:tracking-[0.14em]"
+          className="max-w-[98vw] font-serif text-[var(--text-hero-display)] font-normal leading-[0.88] tracking-[0.1em] text-[var(--color-on-image)] sm:max-w-none sm:tracking-[0.14em] md:tracking-[0.16em] lg:tracking-[0.18em]"
         >
           {title}
         </motion.h1>

@@ -40,11 +40,14 @@ export {
   getCollections,
   getCollection,
   getCollectionProducts,
+  getCollectionShowcaseItems,
   resolveCollectionHandle,
   getPrimaryCollectionHandle,
   productMatchesCollection,
   limitComingSoonByCollection,
 } from "./collections";
+
+export type { CollectionShowcaseItem } from "./collections";
 
 export {
   getCheckoutUrl,
