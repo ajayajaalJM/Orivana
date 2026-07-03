@@ -1,5 +1,11 @@
 import { createClient } from "@sanity/client";
 import imageUrlBuilder from "@sanity/image-url";
+import type { PortableTextBlock } from "@portabletext/types";
+import {
+  getFallbackCollectionEditorial,
+  type CollectionEditorial,
+  type CollectionHandle,
+} from "./collections";
 import { images, img } from "./images";
 
 export interface SanityImage {
@@ -17,6 +23,7 @@ export interface HomepageData {
     backgroundVideoUrl?: string;
   };
   featuredDrop: {
+    productHandle?: string;
     editorialDescription: string;
   };
   brandStory: {
@@ -34,7 +41,7 @@ export interface JournalPost {
   excerpt: string;
   publishedAt: string;
   mainImage?: SanityImage;
-  body?: unknown[];
+  body?: PortableTextBlock[];
 }
 
 export interface ProductStory {
@@ -82,6 +89,7 @@ const MOCK_HOMEPAGE: HomepageData = {
     backgroundVideoUrl: undefined,
   },
   featuredDrop: {
+    productHandle: "medjool-dates-al-kufra",
     editorialDescription:
       "Hand-selected Medjool dates from desert groves — where heat concentrates sweetness into amber depth.",
   },
@@ -309,7 +317,7 @@ export async function getHomepage(): Promise<HomepageData> {
     const data = await sanityClient.fetch<HomepageData>(`
       *[_type == "homepage"][0] {
         hero { title, subtitle, ctaText, backgroundImage, backgroundVideoUrl },
-        featuredDrop { editorialDescription },
+        featuredDrop { productHandle, editorialDescription },
         brandStory { title, body, ctaText, image }
       }
     `);
@@ -395,3 +403,77 @@ export function getJournalArticleBody(slug: string): string {
     "Stories of land, harvest, and tradition from the Orivana atelier — where Mediterranean craft meets quiet luxury."
   );
 }
+
+interface SanityCollectionEditorial {
+  handle: CollectionHandle;
+  title: string;
+  shortTitle: string;
+  heroIntro: string;
+  story: { title: string; paragraphs: string[] };
+  heroImage?: SanityImage;
+  gridImage?: SanityImage;
+  featuredRecipe?: Recipe | null;
+  relatedJournalPosts?: JournalPost[];
+}
+
+export async function getCollectionEditorial(
+  handle: string
+): Promise<CollectionEditorial | undefined> {
+  const fallback = getFallbackCollectionEditorial(handle);
+
+  if (!sanityClient) return fallback;
+
+  try {
+    const data = await sanityClient.fetch<SanityCollectionEditorial | null>(
+      `*[_type == "collectionEditorial" && handle == $handle][0] {
+        handle,
+        title,
+        shortTitle,
+        heroIntro,
+        story { title, paragraphs },
+        heroImage,
+        gridImage,
+        "featuredRecipe": featuredRecipe-> {
+          _id, title, slug, description, heroImage,
+          ingredients[] { productHandle, quantity, origin },
+          steps,
+          relatedProductHandles
+        },
+        "relatedJournalPosts": relatedJournalPosts[]-> {
+          _id, title, slug, excerpt, publishedAt, mainImage
+        }
+      }`,
+      { handle }
+    );
+
+    if (!data) return fallback;
+
+    return {
+      handle: data.handle,
+      title: data.title,
+      shortTitle: data.shortTitle,
+      heroIntro: data.heroIntro,
+      story: data.story,
+      heroImage: data.heroImage ? urlFor(data.heroImage) : fallback?.heroImage ?? "",
+      gridImage: data.gridImage ? urlFor(data.gridImage) : fallback?.gridImage ?? "",
+      featuredRecipeSlug:
+        data.featuredRecipe?.slug.current ?? fallback?.featuredRecipeSlug ?? "",
+      journalSlugs:
+        data.relatedJournalPosts?.map((post) => post.slug.current) ??
+        fallback?.journalSlugs ??
+        [],
+      featuredRecipe: data.featuredRecipe ?? fallback?.featuredRecipe ?? null,
+      journalPosts: data.relatedJournalPosts ?? fallback?.journalPosts ?? [],
+    };
+  } catch {
+    return fallback;
+  }
+}
+
+/** Seed helpers — used by scripts/seed-sanity.ts */
+export const seedData = {
+  homepage: MOCK_HOMEPAGE,
+  journal: MOCK_JOURNAL,
+  recipes: MOCK_RECIPES,
+  productStories: PRODUCT_STORIES,
+};

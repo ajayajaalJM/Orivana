@@ -9,6 +9,8 @@ import { brand } from "@/lib/brand";
 import { createPageMetadata } from "@/lib/metadata";
 import { getBrandStoryPage, getBrandStoryImageUrl, urlFor } from "@/lib/sanity";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = createPageMetadata({
   title: "Our Story",
   description: `${brand.tagline} — premium dates, olive oil, and raw honey from Mediterranean lands.`,

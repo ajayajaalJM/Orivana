@@ -6,6 +6,8 @@ import { getRecipe } from "@/lib/sanity";
 import { createPageMetadata } from "@/lib/metadata";
 import { getProducts } from "@/lib/shopify";
 
+export const revalidate = 60;
+
 interface Props {
   params: Promise<{ slug: string }>;
 }

@@ -12,10 +12,11 @@ interface BrandStoryProps {
   title: string;
   body: string;
   ctaText: string;
+  imageUrl?: string;
 }
 
-export function BrandStory({ title, body, ctaText }: BrandStoryProps) {
-  const imageUrl = getBrandStoryImageUrl();
+export function BrandStory({ title, body, ctaText, imageUrl }: BrandStoryProps) {
+  const resolvedImageUrl = imageUrl || getBrandStoryImageUrl();
   const paragraphs = body.split("\n\n");
 
   return (
@@ -25,7 +26,7 @@ export function BrandStory({ title, body, ctaText }: BrandStoryProps) {
           <ScrollReveal className="order-2 lg:order-1">
             <div className="relative overflow-hidden">
               <ImageBlock
-                src={imageUrl}
+                src={resolvedImageUrl}
                 alt={title}
                 aspectRatio="portrait"
                 parallax

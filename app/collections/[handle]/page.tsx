@@ -6,10 +6,11 @@ import { CollectionStory } from "@/components/collections/CollectionStory";
 import { CollectionProductSection } from "@/components/collections/CollectionProductSection";
 import { CollectionFeaturedRecipe } from "@/components/collections/CollectionFeaturedRecipe";
 import { CollectionJournalPreview } from "@/components/collections/CollectionJournalPreview";
-import { getCollectionEditorial } from "@/lib/collections";
 import { createPageMetadata } from "@/lib/metadata";
 import { getCollectionProducts, resolveCollectionHandle } from "@/lib/shopify";
-import { getRecipe, getJournalPosts } from "@/lib/sanity";
+import { getCollectionEditorial, getRecipe, getJournalPosts } from "@/lib/sanity";
+
+export const revalidate = 60;
 
 interface Props {
   params: Promise<{ handle: string }>;
@@ -18,7 +19,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { handle } = await params;
   const resolved = resolveCollectionHandle(handle);
-  const editorial = getCollectionEditorial(resolved);
+  const editorial = await getCollectionEditorial(resolved);
   return createPageMetadata({
     title: editorial?.title ?? "Collection",
     description: editorial?.heroIntro,
@@ -29,19 +30,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CollectionDetailPage({ params }: Props) {
   const { handle } = await params;
   const resolved = resolveCollectionHandle(handle);
-  const editorial = getCollectionEditorial(resolved);
+  const editorial = await getCollectionEditorial(resolved);
 
   if (!editorial) notFound();
 
-  const [products, recipe, allJournal] = await Promise.all([
+  const [products, recipe, journalPosts] = await Promise.all([
     getCollectionProducts(resolved, 24),
-    getRecipe(editorial.featuredRecipeSlug),
-    getJournalPosts(12),
+    editorial.featuredRecipe
+      ? Promise.resolve(editorial.featuredRecipe)
+      : getRecipe(editorial.featuredRecipeSlug),
+    editorial.journalPosts?.length
+      ? Promise.resolve(editorial.journalPosts)
+      : getJournalPosts(12).then((posts) =>
+          posts.filter((post) => editorial.journalSlugs.includes(post.slug.current))
+        ),
   ]);
-
-  const journalPosts = allJournal.filter((post) =>
-    editorial.journalSlugs.includes(post.slug.current)
-  );
 
   return (
     <>

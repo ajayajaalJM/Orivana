@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
-import { Nav } from "@/components/ui/Nav";
+import { SiteShell } from "@/components/SiteShell";
 import { Providers } from "@/components/Providers";
 import { getRootMetadata } from "@/lib/metadata";
 import "./globals.css";
@@ -32,8 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${cormorant.variable} ${inter.variable}`}>
       <body className="bg-[var(--color-bg)] font-sans text-[var(--color-text)] antialiased">
         <Providers>
-          <Nav />
-          <main className="page-enter">{children}</main>
+          <SiteShell>{children}</SiteShell>
         </Providers>
       </body>
     </html>

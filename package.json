@@ -10,16 +10,22 @@
     "go": "bash scripts/dev.sh",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed:sanity": "node --env-file=.env.local --import tsx scripts/seed-sanity.ts"
   },
   "dependencies": {
+    "@portabletext/react": "^6.2.0",
     "@sanity/client": "^7.6.0",
     "@sanity/image-url": "^1.1.0",
+    "@sanity/vision": "^3.67.1",
     "framer-motion": "^12.19.1",
     "next": "^15.3.4",
     "next-auth": "^4.24.11",
+    "next-sanity": "^9.8.27",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "sanity": "^3.67.1",
+    "styled-components": "^6.4.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
@@ -30,6 +36,7 @@
     "eslint": "^9.29.0",
     "eslint-config-next": "^15.3.4",
     "tailwindcss": "^4.1.10",
+    "tsx": "^4.23.0",
     "typescript": "^5.8.3"
   }
 }

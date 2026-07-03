@@ -10,10 +10,17 @@ interface HeroSectionProps {
   subtitle: string;
   ctaText: string;
   backgroundVideoUrl?: string;
+  backgroundImageUrl?: string;
 }
 
-export function HeroSection({ title, subtitle, ctaText, backgroundVideoUrl }: HeroSectionProps) {
-  const bgUrl = getHeroBackgroundUrl();
+export function HeroSection({
+  title,
+  subtitle,
+  ctaText,
+  backgroundVideoUrl,
+  backgroundImageUrl,
+}: HeroSectionProps) {
+  const bgUrl = backgroundImageUrl || getHeroBackgroundUrl();
 
   const scrollToFeatured = () => {
     document.getElementById("featured-harvest")?.scrollIntoView({ behavior: "smooth" });

@@ -10,6 +10,8 @@ import { brand } from "@/lib/brand";
 import { createPageMetadata } from "@/lib/metadata";
 import { getJournalPosts, getJournalImageUrl, urlFor } from "@/lib/sanity";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = createPageMetadata({
   title: brand.journalTitle,
   description: "Stories of land, harvest, and Mediterranean food heritage from Orivana.",

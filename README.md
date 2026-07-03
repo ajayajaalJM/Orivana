@@ -85,7 +85,8 @@ Without Shopify or Sanity credentials, the site runs with curated mock data so y
 | `/journal` | The Harvest Journal — land, tradition, and harvest stories |
 | `/membership` | Inner Circle — orders and saved selections |
 | `/membership/login` | Inner Circle login |
-| `/membership/signup` | Join the Inner Circle |
+| `/story` | Brand story page |
+| `/studio` | Embedded Sanity CMS Studio (requires `NEXT_PUBLIC_SANITY_PROJECT_ID`) |
 
 ## Design System
 
@@ -93,11 +94,39 @@ Colors, typography, spacing, and animation tokens live in `styles/tokens.css` an
 
 ## Sanity Setup
 
-Import schemas from `sanity/schemas/` into your Sanity Studio project. Content types:
+Embedded Studio lives at **`/studio`** when `NEXT_PUBLIC_SANITY_PROJECT_ID` is set.
 
-- **homepage** — hero, featured harvest copy, brand story
-- **journalPost** — Harvest Journal articles
+### Content types
+
+- **homepage** — hero, featured harvest (Shopify product handle + editorial copy), brand story
+- **journalPost** — Harvest Journal articles (Portable Text body)
+- **recipe** — culinary journal recipes (linked to Shopify product handles)
 - **productStory** — product page storytelling (linked by Shopify handle)
+- **collectionEditorial** — collection page hero, story, featured recipe, related journal posts
+
+### Environment
+
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_SANITY_PROJECT_ID` | Sanity project ID |
+| `NEXT_PUBLIC_SANITY_DATASET` | Dataset (default: `production`) |
+| `SANITY_API_WRITE_TOKEN` | Editor token for `npm run seed:sanity` |
+| `SANITY_REVALIDATE_SECRET` | Bearer token for `POST /api/revalidate` webhook |
+
+### First-time content import
+
+```bash
+# Add SANITY_API_WRITE_TOKEN to .env.local, then:
+npm run seed:sanity
+```
+
+### Featured harvest
+
+In Studio → **Homepage** → **Featured Harvest**, set **Shopify Product Handle** to the product you want on the homepage. Price, image, and cart data still come from Shopify.
+
+### On-demand revalidation
+
+Configure a Sanity webhook on publish to `POST https://your-domain/api/revalidate` with header `Authorization: Bearer <SANITY_REVALIDATE_SECRET>`.
 
 ## Shopify Setup
 

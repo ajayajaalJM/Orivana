@@ -182,13 +182,14 @@ export async function getProduct(handle: string): Promise<ShopifyProduct | null>
 }
 
 /** Homepage featured harvest — always from the live Shopify catalog when configured. */
-export async function getFeaturedProduct(): Promise<ShopifyProduct | null> {
+export async function getFeaturedProduct(preferredHandle?: string): Promise<ShopifyProduct | null> {
   if (!isShopifyConfigured()) {
-    return findMockProduct(getFeaturedProductHandle()) ?? MOCK_PRODUCTS[0] ?? null;
+    const handle = preferredHandle?.trim() || getFeaturedProductHandle();
+    return findMockProduct(handle) ?? MOCK_PRODUCTS[0] ?? null;
   }
 
-  const preferredHandle = getFeaturedProductHandle();
-  const preferred = await getProduct(preferredHandle);
+  const handle = preferredHandle?.trim() || getFeaturedProductHandle();
+  const preferred = await getProduct(handle);
   if (preferred && isProductPurchasable(preferred)) {
     return preferred;
   }

@@ -1,4 +1,5 @@
 import { images, img } from "./images";
+import type { JournalPost, Recipe } from "./sanity";
 
 export type CollectionHandle = "dates" | "olive-oil" | "honey" | "gift-collections";
 
@@ -15,6 +16,8 @@ export interface CollectionEditorial {
   gridImage: string;
   featuredRecipeSlug: string;
   journalSlugs: string[];
+  featuredRecipe?: Recipe | null;
+  journalPosts?: JournalPost[];
 }
 
 export const PERMANENT_COLLECTIONS: CollectionEditorial[] = [
@@ -96,8 +99,13 @@ export const PERMANENT_COLLECTIONS: CollectionEditorial[] = [
   },
 ];
 
-export function getCollectionEditorial(handle: string): CollectionEditorial | undefined {
+export function getFallbackCollectionEditorial(handle: string): CollectionEditorial | undefined {
   return PERMANENT_COLLECTIONS.find((c) => c.handle === handle);
+}
+
+/** @deprecated Use getCollectionEditorial from lib/sanity.ts */
+export function getCollectionEditorial(handle: string): CollectionEditorial | undefined {
+  return getFallbackCollectionEditorial(handle);
 }
 
 export function getAllCollectionHandles(): CollectionHandle[] {

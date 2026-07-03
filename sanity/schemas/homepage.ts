@@ -20,6 +20,12 @@ export default {
       title: "Featured Harvest",
       type: "object",
       fields: [
+        {
+          name: "productHandle",
+          type: "string",
+          title: "Shopify Product Handle",
+          description: "Product shown in the Featured Harvest section on the homepage",
+        },
         { name: "editorialDescription", type: "text" },
       ],
     },

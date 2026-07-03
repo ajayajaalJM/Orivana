@@ -5,8 +5,11 @@ import { Section } from "@/components/ui/Section";
 import { H1, Excerpt, Body, Caption } from "@/components/ui/Typography";
 import { ImageBlock } from "@/components/ui/ImageBlock";
 import { Footer } from "@/components/sections/Footer";
+import { PortableTextBody } from "@/components/sanity/PortableTextBody";
 import { getJournalPost, getJournalImageUrl, getJournalArticleBody, urlFor } from "@/lib/sanity";
 import { createPageMetadata } from "@/lib/metadata";
+
+export const revalidate = 60;
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -34,6 +37,7 @@ export default async function JournalArticlePage({ params }: Props) {
     : getJournalImageUrl(0);
 
   const articleBody = getJournalArticleBody(slug);
+  const hasCmsBody = Array.isArray(post.body) && post.body.length > 0;
 
   return (
     <>
@@ -52,9 +56,16 @@ export default async function JournalArticlePage({ params }: Props) {
               <ImageBlock src={imageUrl} alt={post.title} aspectRatio="landscape" />
             </div>
             <Excerpt className="text-[var(--color-text)]">{post.excerpt}</Excerpt>
-            <Body className="mt-8 text-lg leading-[1.9] sm:text-xl sm:leading-[1.85]">
-              {articleBody}
-            </Body>
+            {hasCmsBody ? (
+              <PortableTextBody
+                value={post.body!}
+                className="mt-8 text-lg leading-[1.9] text-[var(--color-text)] sm:text-xl sm:leading-[1.85]"
+              />
+            ) : (
+              <Body className="mt-8 text-lg leading-[1.9] sm:text-xl sm:leading-[1.85]">
+                {articleBody}
+              </Body>
+            )}
           </article>
         </Container>
       </Section>
