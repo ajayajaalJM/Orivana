@@ -27,11 +27,20 @@ export function CollectionsLanding({ collections }: CollectionsLandingProps) {
         </Container>
       </Section>
 
-      <Section>
+      <div aria-hidden className="mx-auto h-px w-full max-w-[var(--max-width)] bg-gradient-to-r from-transparent via-[var(--color-border)] to-transparent" />
+
+      <Section className="bg-[var(--color-surface-alt)]/25">
         <Container wide>
+          <ScrollReveal className="mb-10 sm:mb-14">
+            <Caption className="mb-4 block text-center">Enter a Collection</Caption>
+            <p className="mx-auto max-w-2xl text-center font-serif text-xl font-light leading-relaxed text-[var(--color-muted)] sm:text-2xl">
+              Four permanent worlds within the House — each room holds its own harvest.
+            </p>
+          </ScrollReveal>
+
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:gap-10">
             {collections.map((collection, i) => (
-              <ScrollReveal key={collection.handle} delay={i * 0.1}>
+              <ScrollReveal key={collection.handle} delay={i * 0.08}>
                 <CollectionShowcaseCard collection={collection} />
               </ScrollReveal>
             ))}

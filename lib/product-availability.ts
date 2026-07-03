@@ -58,6 +58,16 @@ export function getProductShortLabel(product: ShopifyProduct): string {
   return type || "Harvest";
 }
 
+/** Human-readable variant sizes for collection and shop cards. */
+export function getProductVariantLabels(product: ShopifyProduct): string | null {
+  const labels = product.variants
+    .map((variant) => variant.selectedOptions?.[0]?.value ?? variant.title)
+    .filter((label) => label && label !== "Default Title" && label !== "Default");
+
+  if (labels.length <= 1) return labels[0] ?? null;
+  return labels.join(" · ");
+}
+
 export function getProductAvailabilityLabel(product: ShopifyProduct): string {
   const status = getProductAvailabilityStatus(product);
   if (status === "coming_soon") return "Coming Soon";

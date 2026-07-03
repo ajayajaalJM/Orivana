@@ -112,11 +112,15 @@ export function limitComingSoonByCollection(products: ShopifyProduct[]): Shopify
   });
 }
 
-function filterProductsForCollection(products: ShopifyProduct[], handle: string): ShopifyProduct[] {
+function filterProductsForCollection(
+  products: ShopifyProduct[],
+  handle: string,
+  options?: { limitComingSoon?: boolean }
+): ShopifyProduct[] {
   const resolved = resolveCollectionHandle(handle);
-  return limitComingSoonByCollection(
-    products.filter((product) => productMatchesCollection(product, resolved))
-  );
+  const filtered = products.filter((product) => productMatchesCollection(product, resolved));
+  if (options?.limitComingSoon === false) return filtered;
+  return limitComingSoonByCollection(filtered);
 }
 
 function editorialToShowcase(handle: string): CollectionShowcaseItem | null {
@@ -240,12 +244,18 @@ export async function getCollectionProducts(
   const resolved = resolveCollectionHandle(handle);
 
   if (!isShopifyConfigured()) {
-    return filterProductsForCollection(MOCK_PRODUCTS, resolved).slice(0, first);
+    return filterProductsForCollection(MOCK_PRODUCTS, resolved, { limitComingSoon: false }).slice(
+      0,
+      first
+    );
   }
 
   try {
     const catalog = await fetchProductsFromStorefront(50);
-    return filterProductsForCollection(catalog, resolved).slice(0, first);
+    return filterProductsForCollection(catalog, resolved, { limitComingSoon: false }).slice(
+      0,
+      first
+    );
   } catch {
     return [];
   }

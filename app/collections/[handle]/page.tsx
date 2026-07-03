@@ -50,7 +50,7 @@ export default async function CollectionDetailPage({ params }: Props) {
     <>
       <CollectionHero editorial={editorial} />
       <CollectionStory editorial={editorial} />
-      <CollectionProductSection products={products} />
+      <CollectionProductSection products={products} collectionTitle={editorial.shortTitle} />
       <CollectionFeaturedRecipe recipe={recipe} />
       <CollectionJournalPreview posts={journalPosts.slice(0, 3)} />
       <Footer />
