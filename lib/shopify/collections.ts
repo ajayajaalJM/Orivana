@@ -157,7 +157,7 @@ export async function getCollectionShowcaseItems(): Promise<CollectionShowcaseIt
         handle: editorial.handle,
         title: shopify.title?.trim() || editorial.title,
         description: shopify.description?.trim() || editorial.description,
-        imageUrl: shopify.image?.url?.trim() || editorial.imageUrl,
+        imageUrl: editorial.imageUrl,
       };
     })
   );

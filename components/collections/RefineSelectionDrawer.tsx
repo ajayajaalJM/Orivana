@@ -31,6 +31,12 @@ interface RefineSelectionDrawerProps {
   onChange: (filters: RefineFilters) => void;
 }
 
+const drawerActionClass =
+  "inline-flex min-h-[44px] items-center px-2 text-xs tracking-[0.15em] uppercase transition-colors";
+
+const drawerCloseClass =
+  "inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-xs tracking-[0.2em] uppercase text-[var(--color-muted)] transition-colors hover:text-[var(--color-text)]";
+
 export function RefineSelectionDrawer({ products, filters, onChange }: RefineSelectionDrawerProps) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -81,14 +87,14 @@ export function RefineSelectionDrawer({ products, filters, onChange }: RefineSel
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-y-0 right-0 z-[100] flex w-full max-w-sm flex-col border-l border-[var(--color-border)] bg-[var(--color-bg)] shadow-[-8px_0_32px_var(--color-shadow)] safe-top safe-bottom"
+            className="fixed inset-y-0 right-0 z-[100] flex w-full max-w-md flex-col border-l border-[var(--color-border)] bg-[var(--color-bg)] shadow-[-8px_0_32px_var(--color-shadow)] safe-top safe-bottom"
           >
             <div className="flex items-center justify-between border-b border-[var(--color-border)] px-6 py-5">
               <h2 className="font-serif text-xl tracking-[0.04em]">{brand.refineSelection}</h2>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="text-xs tracking-[0.2em] uppercase text-[var(--color-muted)]"
+                className={drawerCloseClass}
               >
                 Close
               </button>
@@ -131,14 +137,14 @@ export function RefineSelectionDrawer({ products, filters, onChange }: RefineSel
               <button
                 type="button"
                 onClick={() => onChange(EMPTY_FILTERS)}
-                className="text-xs tracking-[0.15em] uppercase text-[var(--color-muted)] hover:text-[var(--color-text)]"
+                className={`${drawerActionClass} text-[var(--color-muted)] hover:text-[var(--color-text)]`}
               >
                 Clear
               </button>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="ml-auto text-xs tracking-[0.15em] uppercase text-[var(--color-olive)]"
+                className={`${drawerActionClass} ml-auto text-[var(--color-olive)]`}
               >
                 View Selections
               </button>
@@ -154,7 +160,7 @@ export function RefineSelectionDrawer({ products, filters, onChange }: RefineSel
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-xs font-light tracking-[0.18em] uppercase text-[var(--color-muted)] transition-colors hover:text-[var(--color-text)]"
+        className="inline-flex min-h-[44px] items-center text-xs font-light tracking-[0.16em] uppercase text-[var(--color-muted)] transition-colors hover:text-[var(--color-text)] sm:tracking-[0.18em]"
       >
         {brand.refineSelection}
         {activeCount > 0 && (
@@ -189,7 +195,7 @@ function FilterGroup({
             <button
               type="button"
               onClick={() => onSelect(value)}
-              className={`text-sm font-light transition-colors ${
+              className={`flex min-h-[44px] w-full items-center text-left text-sm font-light transition-colors ${
                 selected === value
                   ? "text-[var(--color-olive)]"
                   : "text-[var(--color-text-soft)] hover:text-[var(--color-text)]"

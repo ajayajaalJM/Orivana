@@ -41,9 +41,9 @@ export function ShopContent({ products }: ShopContentProps) {
 
   return (
     <>
-      <div className="mb-10 flex flex-col gap-6 sm:mb-14 md:flex-row md:items-center md:justify-between">
+      <div className="mb-8 flex flex-col gap-5 sm:mb-14 md:flex-row md:items-center md:justify-between md:gap-6">
         <div
-          className="flex flex-wrap gap-x-6 gap-y-3"
+          className="-mx-1 flex gap-x-5 overflow-x-auto pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:gap-x-6 sm:gap-y-3 sm:overflow-visible [&::-webkit-scrollbar]:hidden"
           role="group"
           aria-label="Browse by collection"
         >
@@ -52,7 +52,7 @@ export function ShopContent({ products }: ShopContentProps) {
               key={tab.label}
               type="button"
               onClick={() => setActiveCollection(tab.handle)}
-              className={`min-h-[44px] text-xs font-light tracking-[0.14em] uppercase transition-colors duration-500 sm:tracking-[0.18em] ${
+              className={`shrink-0 min-h-[44px] whitespace-nowrap text-xs font-light tracking-[0.14em] uppercase transition-colors duration-500 sm:tracking-[0.18em] ${
                 activeCollection === tab.handle
                   ? "border-b border-[var(--color-accent)] pb-1 text-[var(--color-olive)]"
                   : "text-[var(--color-muted)] hover:text-[var(--color-text)]"
@@ -63,11 +63,9 @@ export function ShopContent({ products }: ShopContentProps) {
             </button>
           ))}
         </div>
-        <RefineSelectionDrawer
-          products={products}
-          filters={filters}
-          onChange={setFilters}
-        />
+        <div className="flex shrink-0 justify-end md:justify-start">
+          <RefineSelectionDrawer products={products} filters={filters} onChange={setFilters} />
+        </div>
       </div>
 
       <CollectionSelectionGrid products={filteredProducts} />

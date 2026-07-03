@@ -26,7 +26,7 @@ export function CollectionSelectionGrid({ products }: CollectionSelectionGridPro
   }
 
   return (
-    <div className="grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-20">
+    <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-14 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-20">
       {products.map((product, i) => {
         const comingSoon = isComingSoonProduct(product);
         const variantLabels = getProductVariantLabels(product);
@@ -35,30 +35,28 @@ export function CollectionSelectionGrid({ products }: CollectionSelectionGridPro
           <ScrollReveal key={product.id} delay={i * 0.05}>
             <Link href={`/product/${product.handle}`} className="group block">
               <div className="relative overflow-hidden bg-[var(--color-surface)]">
-                <div className="relative aspect-[4/5]">
-                  <ImageBlock
-                    src={product.featuredImage?.url ?? ""}
-                    alt={product.title}
-                    fill
-                    hoverZoom={!comingSoon}
-                    className={comingSoon ? "opacity-85 saturate-[0.7]" : undefined}
-                  />
-                  <div className="pointer-events-none absolute inset-0 border border-[var(--color-border)]/30 transition-colors duration-700 group-hover:border-[var(--color-accent)]/35" />
-                  {comingSoon && (
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[var(--color-bg)]/90 via-[var(--color-bg)]/20 to-transparent px-6 pb-6 pt-16">
-                      <Caption className="tracking-[0.22em] text-[var(--color-text)]">
-                        {brand.comingSoon}
-                      </Caption>
-                    </div>
-                  )}
-                </div>
+                <ImageBlock
+                  src={product.featuredImage?.url ?? ""}
+                  alt={product.title}
+                  aspectRatio="tall"
+                  hoverZoom={!comingSoon}
+                  className={comingSoon ? "opacity-85 saturate-[0.7]" : undefined}
+                />
+                <div className="pointer-events-none absolute inset-0 border border-[var(--color-border)]/30 transition-colors duration-700 group-hover:border-[var(--color-accent)]/35" />
+                {comingSoon && (
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[var(--color-bg)]/90 via-[var(--color-bg)]/20 to-transparent px-6 pb-6 pt-16">
+                    <Caption className="tracking-[0.22em] text-[var(--color-text)]">
+                      {brand.comingSoon}
+                    </Caption>
+                  </div>
+                )}
               </div>
 
-              <div className="mt-6 space-y-3 px-1 sm:mt-7">
+              <div className="mt-5 space-y-2 px-1 sm:mt-7 sm:space-y-3">
                 {product.productType && (
                   <Caption className="block text-[var(--color-olive)]">{product.productType}</Caption>
                 )}
-                <h3 className="font-serif text-xl font-normal leading-snug tracking-[0.02em] text-[var(--color-text)] transition-colors duration-500 group-hover:text-[var(--color-text)]/75 sm:text-2xl">
+                <h3 className="font-serif text-lg font-normal leading-snug tracking-[0.02em] text-[var(--color-text)] transition-colors duration-500 group-hover:text-[var(--color-text)]/75 sm:text-xl lg:text-2xl">
                   {comingSoon ? getProductShortLabel(product) : product.title}
                 </h3>
                 {!comingSoon && product.origin && (
@@ -70,7 +68,7 @@ export function CollectionSelectionGrid({ products }: CollectionSelectionGridPro
                   </p>
                 )}
                 {!comingSoon && (
-                  <p className="font-serif text-lg text-[var(--color-accent)]">
+                  <p className="font-serif text-base text-[var(--color-accent)] sm:text-lg">
                     From {formatPrice(product.priceRange.minVariantPrice)}
                     {product.priceRange.maxVariantPrice.amount !==
                       product.priceRange.minVariantPrice.amount &&

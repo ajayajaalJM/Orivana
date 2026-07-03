@@ -13,7 +13,7 @@ export function Section({ children, className = "", id, dark = false }: SectionP
     <section
       id={id}
       className={`
-        py-[var(--space-2xl)] md:py-[var(--space-3xl)]
+        py-12 md:py-[var(--space-2xl)] lg:py-[var(--space-3xl)]
         ${dark ? "bg-[var(--color-surface-alt)]" : "bg-[var(--color-bg)]"}
         ${className}
       `}

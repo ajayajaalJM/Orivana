@@ -6,6 +6,9 @@ interface QuantitySelectorProps {
   min?: number;
 }
 
+const buttonClass =
+  "flex h-10 w-10 items-center justify-center border border-[var(--color-border)] text-[var(--color-muted)] transition-colors hover:border-[var(--color-text)]/30 hover:text-[var(--color-text)] disabled:opacity-40 sm:h-8 sm:w-8";
+
 export function QuantitySelector({
   quantity,
   onDecrease,
@@ -19,7 +22,7 @@ export function QuantitySelector({
         type="button"
         disabled={disabled || quantity <= min}
         onClick={onDecrease}
-        className="flex h-8 w-8 items-center justify-center border border-[var(--color-border)] text-[var(--color-muted)] transition-colors hover:border-[var(--color-text)]/30 hover:text-[var(--color-text)] disabled:opacity-40"
+        className={buttonClass}
         aria-label="Decrease quantity"
       >
         −
@@ -29,7 +32,7 @@ export function QuantitySelector({
         type="button"
         disabled={disabled}
         onClick={onIncrease}
-        className="flex h-8 w-8 items-center justify-center border border-[var(--color-border)] text-[var(--color-muted)] transition-colors hover:border-[var(--color-text)]/30 hover:text-[var(--color-text)] disabled:opacity-40"
+        className={buttonClass}
         aria-label="Increase quantity"
       >
         +

@@ -14,7 +14,7 @@ interface HeroSectionProps {
 }
 
 const heroCtaClass =
-  "inline-flex min-h-[48px] w-full items-center justify-center rounded-[var(--radius-button)] border border-[var(--color-on-image)]/60 bg-[var(--color-on-image)]/10 px-8 py-3.5 text-[11px] font-light tracking-[0.14em] uppercase text-[var(--color-on-image)] transition-colors duration-500 hover:border-[var(--color-on-image)] hover:bg-[var(--color-on-image)]/20 sm:w-auto";
+  "inline-flex min-h-[48px] w-full items-center justify-center rounded-[var(--radius-button)] border border-[var(--color-on-image)]/60 bg-[var(--color-on-image)]/10 px-8 py-3.5 text-xs font-light tracking-[0.12em] uppercase text-[var(--color-on-image)] transition-colors duration-500 hover:border-[var(--color-on-image)] hover:bg-[var(--color-on-image)]/20 sm:w-auto sm:text-[11px] sm:tracking-[0.14em]";
 
 export function HeroSection({
   title,
@@ -26,7 +26,7 @@ export function HeroSection({
   const bgUrl = backgroundImageUrl || getHeroBackgroundUrl();
 
   return (
-    <section className="relative h-screen w-full overflow-hidden">
+    <section className="relative h-[100dvh] min-h-[100dvh] w-full overflow-hidden">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -59,12 +59,12 @@ export function HeroSection({
         <div className="grain-overlay" />
       </motion.div>
 
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-5 pb-16 pt-[var(--nav-height)] text-center sm:px-6">
+      <div className="content-below-nav relative z-10 flex h-full flex-col items-center justify-center px-5 pb-20 text-center safe-bottom sm:px-6 sm:pb-16">
         <motion.h1
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-[98vw] font-serif text-[var(--text-hero-display)] font-normal leading-[0.88] tracking-[0.1em] text-[var(--color-on-image)] sm:max-w-none sm:tracking-[0.14em] md:tracking-[0.16em] lg:tracking-[0.18em]"
+          className="max-w-[98vw] break-words font-serif text-[var(--text-hero-display)] font-normal leading-[0.9] tracking-[0.06em] text-[var(--color-on-image)] sm:max-w-none sm:leading-[0.88] sm:tracking-[0.14em] md:tracking-[0.16em] lg:tracking-[0.18em]"
         >
           {title}
         </motion.h1>
@@ -73,7 +73,7 @@ export function HeroSection({
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-8 max-w-sm font-sans text-xs font-light leading-relaxed tracking-[0.22em] uppercase text-[var(--color-on-image)]/90 sm:mt-10 sm:max-w-lg sm:text-sm sm:tracking-[0.28em] md:text-base md:tracking-[0.32em]"
+          className="mt-6 max-w-sm font-sans text-[11px] font-light leading-relaxed tracking-[0.16em] uppercase text-[var(--color-on-image)]/90 sm:mt-10 sm:max-w-lg sm:text-sm sm:tracking-[0.28em] md:text-base md:tracking-[0.32em]"
         >
           {subtitle}
         </motion.p>
@@ -82,7 +82,7 @@ export function HeroSection({
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-12 flex w-full max-w-xs justify-center sm:mt-16 sm:max-w-none"
+          className="mt-10 flex w-full max-w-xs justify-center sm:mt-16 sm:max-w-none"
         >
           <Link href="/collections" className={heroCtaClass}>
             {ctaText}

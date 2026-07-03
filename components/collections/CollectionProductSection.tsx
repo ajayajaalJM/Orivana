@@ -35,17 +35,19 @@ export function CollectionProductSection({
   return (
     <Section className="border-t border-[var(--color-border)]/50 bg-[var(--color-surface-alt)]/35">
       <Container wide>
-        <div className="mb-12 flex flex-col gap-8 border-b border-[var(--color-border)]/40 pb-10 sm:mb-16 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-8 flex flex-col gap-5 border-b border-[var(--color-border)]/40 pb-8 sm:mb-16 sm:flex-row sm:items-end sm:justify-between sm:gap-8 sm:pb-10">
           <div className="max-w-2xl">
-            <Caption className="mb-4 block">The Selection</Caption>
-            <H2 className="text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.15]">
+            <Caption className="mb-3 block sm:mb-4">The Selection</Caption>
+            <H2 className="text-[clamp(1.625rem,5vw,2.5rem)] leading-[1.15]">
               Within {collectionTitle}
             </H2>
-            <p className="mt-4 text-sm font-light leading-relaxed text-[var(--color-muted)]">
+            <p className="mt-3 text-sm font-light leading-relaxed text-[var(--color-muted)] sm:mt-4">
               {selectionLabel} — each harvest presented in its available sizes and expressions.
             </p>
           </div>
-          <RefineSelectionDrawer products={products} filters={filters} onChange={setFilters} />
+          <div className="flex shrink-0 justify-end sm:justify-start">
+            <RefineSelectionDrawer products={products} filters={filters} onChange={setFilters} />
+          </div>
         </div>
 
         <CollectionSelectionGrid products={filtered} />

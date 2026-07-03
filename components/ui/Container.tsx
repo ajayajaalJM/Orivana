@@ -10,7 +10,7 @@ export function Container({ children, className = "", wide = false }: ContainerP
   return (
     <div
       className={`
-        mx-auto w-full min-w-0 px-6 sm:px-6 md:px-8
+        mx-auto w-full min-w-0 px-5 sm:px-6 md:px-8
         ${wide ? "max-w-[1400px]" : "max-w-[var(--max-width)]"}
         ${className}
       `}

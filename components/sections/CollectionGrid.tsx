@@ -18,12 +18,12 @@ export function CollectionGrid({ collections }: CollectionGridProps) {
   return (
     <Section>
       <Container wide>
-        <ScrollReveal className="mb-10 sm:mb-[var(--space-2xl)]">
+        <ScrollReveal className="mb-8 sm:mb-[var(--space-2xl)]">
           <Caption className="mb-4 block sm:mb-6">{brand.collectionsCaption}</Caption>
           <H2>{brand.collectionsTitle}</H2>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:gap-10">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:gap-10">
           {collections.map((collection, i) => (
             <ScrollReveal key={collection.handle} delay={i * 0.1}>
               <CollectionShowcaseCard collection={collection} />

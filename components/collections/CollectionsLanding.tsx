@@ -31,14 +31,14 @@ export function CollectionsLanding({ collections }: CollectionsLandingProps) {
 
       <Section className="bg-[var(--color-surface-alt)]/25">
         <Container wide>
-          <ScrollReveal className="mb-10 sm:mb-14">
-            <Caption className="mb-4 block text-center">Enter a Collection</Caption>
-            <p className="mx-auto max-w-2xl text-center font-serif text-xl font-light leading-relaxed text-[var(--color-muted)] sm:text-2xl">
+          <ScrollReveal className="mb-8 sm:mb-14">
+            <Caption className="mb-3 block text-center sm:mb-4">Enter a Collection</Caption>
+            <p className="mx-auto max-w-2xl text-center font-serif text-lg font-light leading-relaxed text-[var(--color-muted)] sm:text-2xl">
               Four permanent worlds within the House — each room holds its own harvest.
             </p>
           </ScrollReveal>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:gap-10">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:gap-10">
             {collections.map((collection, i) => (
               <ScrollReveal key={collection.handle} delay={i * 0.08}>
                 <CollectionShowcaseCard collection={collection} />

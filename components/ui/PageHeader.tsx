@@ -10,7 +10,7 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, description, children, className = "" }: PageHeaderProps) {
   return (
-    <header className={`mb-10 sm:mb-14 md:mb-[var(--space-2xl)] ${className}`}>
+    <header className={`mb-8 sm:mb-14 md:mb-[var(--space-2xl)] ${className}`}>
       <H1 as="h1" className="page-title mb-4 sm:mb-6">
         {title}
       </H1>

@@ -2,19 +2,22 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { brand } from "@/lib/brand";
 
+const footerLinkClass =
+  "inline-flex min-h-[44px] items-center justify-center px-2 text-center text-xs tracking-[0.14em] uppercase text-[var(--color-muted)] transition-colors duration-500 hover:text-[var(--color-text)] sm:tracking-[0.2em]";
+
 export function Footer() {
   return (
-    <footer className="safe-bottom border-t border-[var(--color-border)] bg-[var(--color-bg)] py-12 sm:py-[var(--space-2xl)]">
-      <Container>
-        <div className="flex flex-col items-center gap-10 sm:gap-14 md:flex-row md:items-start md:justify-between">
+    <footer className="safe-bottom border-t border-[var(--color-border)] bg-[var(--color-bg)] py-10 sm:py-[var(--space-2xl)]">
+      <Container className="text-center">
+        <div className="flex flex-col items-center gap-8 sm:gap-10">
           <Link
             href="/"
-            className="shrink-0 font-serif text-sm tracking-[0.2em] text-[var(--color-muted)] transition-colors duration-500 hover:text-[var(--color-text)] sm:tracking-[0.28em]"
+            className="inline-flex min-h-[44px] items-center justify-center font-serif text-sm tracking-[0.2em] text-[var(--color-muted)] transition-colors duration-500 hover:text-[var(--color-text)] sm:tracking-[0.28em]"
           >
             ORIVANA
           </Link>
 
-          <nav className="grid w-full max-w-sm grid-cols-2 gap-x-6 gap-y-4 sm:flex sm:max-w-none sm:flex-wrap sm:justify-center sm:gap-8 md:gap-10">
+          <nav className="flex w-full flex-wrap items-center justify-center gap-x-6 gap-y-1 sm:gap-x-8 md:gap-x-10">
             {[
               { href: "/shop", label: "Shop" },
               { href: "/collections", label: "Collections" },
@@ -23,34 +26,24 @@ export function Footer() {
               { href: "/recipes", label: brand.culinaryJournal },
               { href: "/contact", label: "Contact" },
             ].map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-center text-xs tracking-[0.14em] uppercase text-[var(--color-muted)] transition-colors duration-500 hover:text-[var(--color-text)] sm:text-left sm:tracking-[0.2em]"
-              >
+              <Link key={link.href} href={link.href} className={footerLinkClass}>
                 {link.label}
               </Link>
             ))}
           </nav>
 
-          <div className="flex shrink-0 gap-8">
-            {[
-              { label: "Instagram", href: "#" },
-              { label: "Pinterest", href: "#" },
-            ].map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                aria-label={social.label}
-                className="text-xs tracking-[0.15em] uppercase text-[var(--color-muted)] transition-colors duration-500 hover:text-[var(--color-text)]"
-              >
-                {social.label === "Instagram" ? "Ig" : "Pi"}
-              </a>
-            ))}
-          </div>
+          <a
+            href="https://instagram.com/orivanastore"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Orivana on Instagram"
+            className="inline-flex min-h-[44px] items-center justify-center px-2 text-xs tracking-[0.14em] text-[var(--color-muted)] normal-case transition-colors duration-500 hover:text-[var(--color-text)] sm:tracking-[0.16em]"
+          >
+            @orivanastore
+          </a>
         </div>
 
-        <p className="mt-10 text-center text-xs tracking-[0.12em] text-[var(--color-muted)]/60 sm:mt-16">
+        <p className="mt-8 pb-6 text-center text-xs tracking-[0.12em] text-[var(--color-muted)]/60 sm:mt-12 sm:pb-8">
           © {new Date().getFullYear()} Orivana
         </p>
       </Container>

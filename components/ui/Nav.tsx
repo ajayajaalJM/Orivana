@@ -124,7 +124,7 @@ export function Nav() {
                 />
               </svg>
               {cart.totalQuantity > 0 && (
-                <span className="absolute -right-1 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--color-accent)] px-1 text-[9px] text-[var(--color-bg)]">
+                <span className="absolute -right-1 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--color-accent)] px-1 text-[10px] text-[var(--color-bg)]">
                   {cart.totalQuantity}
                 </span>
               )}

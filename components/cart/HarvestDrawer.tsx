@@ -103,7 +103,7 @@ export function HarvestDrawer() {
               <button
                 type="button"
                 onClick={closeDrawer}
-                className="text-xs tracking-[0.2em] uppercase text-[var(--color-muted)] transition-colors hover:text-[var(--color-text)]"
+                className="inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center text-xs tracking-[0.2em] uppercase text-[var(--color-muted)] transition-colors hover:text-[var(--color-text)]"
                 aria-label="Close"
               >
                 Close
@@ -161,7 +161,7 @@ export function HarvestDrawer() {
                             type="button"
                             disabled={isLoading}
                             onClick={() => removeLine(line.id)}
-                            className="text-[10px] tracking-[0.15em] uppercase text-[var(--color-muted)] transition-colors hover:text-[var(--color-text)]"
+                            className="inline-flex min-h-[44px] items-center px-2 text-[11px] tracking-[0.15em] uppercase text-[var(--color-muted)] transition-colors hover:text-[var(--color-text)]"
                           >
                             Remove
                           </button>
