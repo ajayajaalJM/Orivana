@@ -9,6 +9,7 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { H2, Excerpt, Caption, Price } from "@/components/ui/Typography";
 import { ImageBlock } from "@/components/ui/ImageBlock";
 import { brand } from "@/lib/brand";
+import { isProductPurchasable } from "@/lib/product-availability";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
 
 interface FeaturedDropProps {
@@ -17,7 +18,8 @@ interface FeaturedDropProps {
 }
 
 export function FeaturedDrop({ product, editorialDescription }: FeaturedDropProps) {
-  const variant = product.variants[0];
+  const variant = product.variants.find((v) => v.availableForSale) ?? product.variants[0];
+  const purchasable = isProductPurchasable(product);
 
   return (
     <Section id="featured-harvest">
@@ -38,7 +40,10 @@ export function FeaturedDrop({ product, editorialDescription }: FeaturedDropProp
           <ScrollReveal delay={0.2}>
             <div className="flex flex-col gap-6 sm:gap-10 lg:py-[var(--space-xl)] lg:pl-[var(--space-lg)]">
               <Caption>{brand.featuredHarvestLabel}</Caption>
-              <H2>{brand.featuredHarvestTitle}</H2>
+              <H2>{product.title}</H2>
+              {product.origin && (
+                <Caption className="text-[var(--color-olive)]">{product.origin}</Caption>
+              )}
               <Excerpt italic className="max-w-sm">
                 {editorialDescription}
               </Excerpt>
@@ -49,7 +54,7 @@ export function FeaturedDrop({ product, editorialDescription }: FeaturedDropProp
                     {brand.featuredHarvestDiscover}
                   </Button>
                 </Link>
-                {variant && (
+                {variant && purchasable && (
                   <AddToHarvestButton
                     variantId={variant.id}
                     variant="secondary"

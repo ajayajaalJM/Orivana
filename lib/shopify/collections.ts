@@ -1,10 +1,11 @@
 import { shopifyFetch } from "./graphql";
+import { isShopifyConfigured } from "./config";
 import {
   LEGACY_COLLECTION_HANDLES,
   MOCK_COLLECTIONS,
   findMockProductsByCollection,
 } from "./mock-data";
-import { normalizeProduct } from "./products";
+import { normalizeProduct, PRODUCT_FIELDS } from "./products";
 import type { ShopifyCollection, ShopifyProduct } from "./types";
 
 type RawCollection = Omit<ShopifyCollection, "products"> & {
@@ -29,6 +30,10 @@ export function productMatchesCollection(product: ShopifyProduct, handle: string
 }
 
 export async function getCollections(first = 6): Promise<ShopifyCollection[]> {
+  if (!isShopifyConfigured()) {
+    return MOCK_COLLECTIONS.slice(0, first);
+  }
+
   try {
     const data = await shopifyFetch<{ collections: { edges: { node: ShopifyCollection }[] } }>(
       `query getCollections($first: Int!) {
@@ -42,12 +47,16 @@ export async function getCollections(first = 6): Promise<ShopifyCollection[]> {
 
     return data.collections.edges.map((e) => e.node);
   } catch {
-    return MOCK_COLLECTIONS.slice(0, first);
+    return [];
   }
 }
 
 export async function getCollection(handle: string): Promise<ShopifyCollection | null> {
   const resolved = resolveCollectionHandle(handle);
+
+  if (!isShopifyConfigured()) {
+    return MOCK_COLLECTIONS.find((c) => c.handle === resolved) ?? null;
+  }
 
   try {
     const data = await shopifyFetch<{ collection: ShopifyCollection | null }>(
@@ -62,7 +71,7 @@ export async function getCollection(handle: string): Promise<ShopifyCollection |
 
     return data.collection;
   } catch {
-    return MOCK_COLLECTIONS.find((c) => c.handle === resolved) ?? null;
+    return null;
   }
 }
 
@@ -72,6 +81,10 @@ export async function getCollectionProducts(
 ): Promise<ShopifyProduct[]> {
   const resolved = resolveCollectionHandle(handle);
 
+  if (!isShopifyConfigured()) {
+    return findMockProductsByCollection(resolved, first);
+  }
+
   try {
     const data = await shopifyFetch<{ collection: RawCollection | null }>(
       `query getCollectionProducts($handle: String!, $first: Int!) {
@@ -79,23 +92,7 @@ export async function getCollectionProducts(
           products(first: $first) {
             edges {
               node {
-                id handle title description descriptionHtml productType tags
-                featuredImage { url altText width height }
-                images(first: 5) { edges { node { url altText width height } } }
-                priceRange {
-                  minVariantPrice { amount currencyCode }
-                  maxVariantPrice { amount currencyCode }
-                }
-                variants(first: 10) {
-                  edges {
-                    node {
-                      id title availableForSale quantityAvailable weight weightUnit
-                      price { amount currencyCode }
-                      selectedOptions { name value }
-                    }
-                  }
-                }
-                collections(first: 10) { edges { node { handle } } }
+                ${PRODUCT_FIELDS}
               }
             }
           }
@@ -108,6 +105,6 @@ export async function getCollectionProducts(
     if (!data.collection?.products) return [];
     return data.collection.products.edges.map(({ node }) => normalizeProduct(node));
   } catch {
-    return findMockProductsByCollection(resolved, first);
+    return [];
   }
 }

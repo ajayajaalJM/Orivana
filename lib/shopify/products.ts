@@ -1,13 +1,14 @@
 import type { BulkPack, ProductVisibility } from "../membership-types";
 import {
   getProductAvailabilityLabel,
+  isProductPurchasable,
   type ProductAvailabilityStatus,
 } from "../product-availability";
 import {
   PRODUCT_METAFIELDS_QUERY,
   shopifyFetch,
 } from "./graphql";
-import { isShopifyLive } from "./live";
+import { isShopifyConfigured, getFeaturedProductHandle } from "./config";
 import { MOCK_PRODUCTS, findMockProduct } from "./mock-data";
 import type {
   ShopifyImage,
@@ -24,7 +25,7 @@ type RawProduct = Omit<ShopifyProduct, "images" | "variants" | "collections"> & 
   metafields?: (ShopifyMetafield | null)[];
 };
 
-const PRODUCT_FIELDS = `
+export const PRODUCT_FIELDS = `
   id handle title description descriptionHtml productType tags
   featuredImage { url altText width height }
   images(first: 10) { edges { node { url altText width height } } }
@@ -131,11 +132,7 @@ export function formatPrice(money: ShopifyMoney): string {
   }).format(parseFloat(money.amount));
 }
 
-export async function getProducts(first = 12): Promise<ShopifyProduct[]> {
-  if (!(await isShopifyLive())) {
-    return MOCK_PRODUCTS.slice(0, first);
-  }
-
+async function fetchProductsFromStorefront(first: number): Promise<ShopifyProduct[]> {
   const data = await shopifyFetch<{ products: { edges: { node: RawProduct }[] } }>(
     `query getProducts($first: Int!) {
       products(first: $first) {
@@ -149,44 +146,81 @@ export async function getProducts(first = 12): Promise<ShopifyProduct[]> {
   return data.products.edges.map(({ node }) => normalizeProduct(node));
 }
 
+export async function getProducts(first = 12): Promise<ShopifyProduct[]> {
+  if (!isShopifyConfigured()) {
+    return MOCK_PRODUCTS.slice(0, first);
+  }
+
+  try {
+    return await fetchProductsFromStorefront(first);
+  } catch {
+    return [];
+  }
+}
+
 export async function getProduct(handle: string): Promise<ShopifyProduct | null> {
-  if (!(await isShopifyLive())) {
+  if (!isShopifyConfigured()) {
     return findMockProduct(handle);
   }
 
-  const data = await shopifyFetch<{ product: RawProduct | null }>(
-    `query getProduct($handle: String!) {
-      product(handle: $handle) {
-        ${PRODUCT_FIELDS}
-      }
-    }`,
-    { handle },
-    { tags: [`product-${handle}`], revalidate: 60 }
-  );
+  try {
+    const data = await shopifyFetch<{ product: RawProduct | null }>(
+      `query getProduct($handle: String!) {
+        product(handle: $handle) {
+          ${PRODUCT_FIELDS}
+        }
+      }`,
+      { handle },
+      { tags: [`product-${handle}`], revalidate: 60 }
+    );
 
-  if (!data.product) return null;
-  return normalizeProduct(data.product);
+    if (!data.product) return null;
+    return normalizeProduct(data.product);
+  } catch {
+    return null;
+  }
 }
 
-export async function getFeaturedProduct(): Promise<ShopifyProduct> {
-  if (!(await isShopifyLive())) {
-    return MOCK_PRODUCTS[0];
+/** Homepage featured harvest — always from the live Shopify catalog when configured. */
+export async function getFeaturedProduct(): Promise<ShopifyProduct | null> {
+  if (!isShopifyConfigured()) {
+    return findMockProduct(getFeaturedProductHandle()) ?? MOCK_PRODUCTS[0] ?? null;
   }
 
-  const data = await shopifyFetch<{ products: { edges: { node: RawProduct }[] } }>(
-    `query getFeaturedProduct {
-      products(first: 1, sortKey: BEST_SELLING) {
-        edges { node { ${PRODUCT_FIELDS} } }
-      }
-    }`,
-    undefined,
-    { tags: ["featured-product"], revalidate: 60 }
-  );
+  const preferredHandle = getFeaturedProductHandle();
+  const preferred = await getProduct(preferredHandle);
+  if (preferred && isProductPurchasable(preferred)) {
+    return preferred;
+  }
 
-  const product = data.products.edges[0]?.node;
-  if (product) return normalizeProduct(product);
+  try {
+    const tagged = await shopifyFetch<{ products: { edges: { node: RawProduct }[] } }>(
+      `query getFeaturedByTag {
+        products(first: 10, query: "tag:featured") {
+          edges { node { ${PRODUCT_FIELDS} } }
+        }
+      }`,
+      undefined,
+      { tags: ["featured-product"], revalidate: 60 }
+    );
 
-  return MOCK_PRODUCTS[0];
+    const featured = tagged.products.edges
+      .map(({ node }) => normalizeProduct(node))
+      .find(isProductPurchasable);
+    if (featured) return featured;
+  } catch {
+    // fall through to catalog scan
+  }
+
+  try {
+    const catalog = await fetchProductsFromStorefront(50);
+    const purchasable = catalog.find(isProductPurchasable);
+    if (purchasable) return purchasable;
+  } catch {
+    // ignore
+  }
+
+  return preferred;
 }
 
 export async function getProductsByHandles(handles: string[]): Promise<ShopifyProduct[]> {
@@ -200,7 +234,7 @@ export async function findVariantProduct(variantId: string): Promise<{
   product: ShopifyProduct;
   variant: ShopifyVariant;
 } | null> {
-  if (await isShopifyLive()) {
+  if (isShopifyConfigured()) {
     type VariantNode = {
       id: string;
       title: string;
@@ -209,36 +243,40 @@ export async function findVariantProduct(variantId: string): Promise<{
       product: RawProduct;
     };
 
-    const data = await shopifyFetch<{ node: VariantNode | null }>(
-      `query getVariant($id: ID!) {
-        node(id: $id) {
-          ... on ProductVariant {
-            id
-            title
-            availableForSale
-            price { amount currencyCode }
-            product {
-              ${PRODUCT_FIELDS}
+    try {
+      const data = await shopifyFetch<{ node: VariantNode | null }>(
+        `query getVariant($id: ID!) {
+          node(id: $id) {
+            ... on ProductVariant {
+              id
+              title
+              availableForSale
+              price { amount currencyCode }
+              product {
+                ${PRODUCT_FIELDS}
+              }
             }
           }
-        }
-      }`,
-      { id: variantId },
-      { cache: "no-store" }
-    );
+        }`,
+        { id: variantId },
+        { cache: "no-store" }
+      );
 
-    if (!data.node?.product) return null;
+      if (!data.node?.product) return null;
 
-    const product = normalizeProduct(data.node.product);
-    const variant = product.variants.find((v) => v.id === variantId) ?? {
-      id: data.node.id,
-      title: data.node.title,
-      availableForSale: data.node.availableForSale,
-      price: data.node.price,
-      selectedOptions: [],
-    };
+      const product = normalizeProduct(data.node.product);
+      const variant = product.variants.find((v) => v.id === variantId) ?? {
+        id: data.node.id,
+        title: data.node.title,
+        availableForSale: data.node.availableForSale,
+        price: data.node.price,
+        selectedOptions: [],
+      };
 
-    return { product, variant };
+      return { product, variant };
+    } catch {
+      return null;
+    }
   }
 
   for (const product of MOCK_PRODUCTS) {

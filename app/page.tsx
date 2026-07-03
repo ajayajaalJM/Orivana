@@ -26,10 +26,12 @@ export default async function HomePage() {
         ctaText={homepage.hero.ctaText}
         backgroundVideoUrl={homepage.hero.backgroundVideoUrl}
       />
-      <FeaturedDrop
-        product={featuredProduct}
-        editorialDescription={homepage.featuredDrop.editorialDescription}
-      />
+      {featuredProduct && (
+        <FeaturedDrop
+          product={featuredProduct}
+          editorialDescription={homepage.featuredDrop.editorialDescription}
+        />
+      )}
       <BrandStory
         title={homepage.brandStory.title}
         body={homepage.brandStory.body}

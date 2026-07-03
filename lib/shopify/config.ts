@@ -35,6 +35,11 @@ export function isShopifyConfigured(): boolean {
   return getShopifyConfig() !== null;
 }
 
+/** Product handle for the homepage featured harvest (Storefront API source of truth). */
+export function getFeaturedProductHandle(): string {
+  return readEnv("SHOPIFY_FEATURED_PRODUCT_HANDLE") ?? "medjool-dates-al-kufra";
+}
+
 export function getStoreDomain(): string | undefined {
   return getShopifyConfig()?.storeDomain;
 }
