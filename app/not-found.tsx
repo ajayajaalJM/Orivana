@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Footer } from "@/components/sections/Footer";
 import { Container } from "@/components/ui/Container";
-import { Caption, Excerpt } from "@/components/ui/Typography";
+import { Caption, Excerpt, H1 } from "@/components/ui/Typography";
 import { brand } from "@/lib/brand";
+
+export const metadata: Metadata = {
+  title: "Page Not Found",
+  robots: { index: false, follow: false },
+};
 
 const primaryCta =
   "inline-flex min-h-[48px] items-center justify-center rounded-[var(--radius-button)] border border-[var(--color-accent)] bg-[var(--color-accent)] px-8 py-3.5 text-[11px] font-light tracking-[0.14em] uppercase text-[var(--color-bg)] transition-colors duration-500 hover:border-[var(--color-accent-hover)] hover:bg-[var(--color-accent-hover)]";
@@ -24,8 +30,10 @@ export default function NotFound() {
           <div className="mx-auto max-w-2xl text-center">
             <Caption className="mb-6 block sm:mb-8">Page Not Found</Caption>
 
+            <H1 className="page-title mb-6 sm:mb-8">This page could not be found</H1>
+
             <p
-              className="font-serif text-[clamp(5.5rem,22vw,12rem)] font-normal leading-[0.9] tracking-[0.06em] text-[var(--color-text)] sm:tracking-[0.1em]"
+              className="font-serif text-[clamp(5.5rem,22vw,12rem)] font-normal leading-[0.9] tracking-[0.06em] text-[var(--color-text)]/15 sm:tracking-[0.1em]"
               aria-hidden
             >
               404

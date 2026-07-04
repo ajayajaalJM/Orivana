@@ -5,13 +5,13 @@ export const siteSeo = {
     "Discover Orivana, a premium destination for healthy foods. Dates, artisan olive oil, honey, herbs, and handcrafted products. Ethically sourced, naturally exceptional, and delivered worldwide. Experience the rich flavours, traditions, and heritage of the Mediterranean in every order.",
   ogImageAlt: "Orivana brand logo — premium Mediterranean dates, olive oil, and honey",
   siteName: "Orivana",
-  ogImageWidth: 1024,
-  ogImageHeight: 536,
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
 } as const;
 
-/** Default /og.png in public/, or override with NEXT_PUBLIC_OG_IMAGE. */
+/** Default opengraph-image route, or override with NEXT_PUBLIC_OG_IMAGE. */
 export function getOgImagePath(): string {
-  return process.env.NEXT_PUBLIC_OG_IMAGE?.trim() || "/og.png";
+  return process.env.NEXT_PUBLIC_OG_IMAGE?.trim() || "/opengraph-image";
 }
 
 export function getOgImageUrl(baseUrl?: URL): string {

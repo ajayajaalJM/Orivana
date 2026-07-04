@@ -5,6 +5,8 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { brand } from "@/lib/brand";
 import { createPageMetadata } from "@/lib/metadata";
 import { Footer } from "@/components/sections/Footer";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { contactPageJsonLd } from "@/lib/structured-data";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Contact",
@@ -15,6 +17,7 @@ export const metadata: Metadata = createPageMetadata({
 export default function ContactPage() {
   return (
     <>
+      <JsonLd data={contactPageJsonLd()} />
       <Section className="page-top">
         <Container>
           <div className="mx-auto max-w-lg text-center">

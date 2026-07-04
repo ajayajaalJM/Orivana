@@ -22,8 +22,9 @@ export function Footer() {
               { href: "/shop", label: "Shop" },
               { href: "/collections", label: "Collections" },
               { href: "/journal", label: brand.journalTitle },
-              { href: "/membership", label: brand.harvestCircle },
               { href: "/recipes", label: brand.culinaryJournal },
+              { href: "/story", label: "Our Story" },
+              { href: "/membership", label: brand.harvestCircle },
               { href: "/contact", label: "Contact" },
             ].map((link) => (
               <Link key={link.href} href={link.href} className={footerLinkClass}>

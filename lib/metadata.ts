@@ -7,7 +7,21 @@ type MetadataOptions = {
   description?: string;
   path: string;
   images?: string[];
+  type?: "website" | "article";
+  publishedTime?: string;
+  modifiedTime?: string;
+  noIndex?: boolean;
+  absoluteTitle?: boolean;
 };
+
+function resolveOgImages(images: string[] | undefined, metadataBase: URL | undefined): string[] {
+  if (images?.length) {
+    return images.map((image) =>
+      image.startsWith("http") ? image : metadataBase ? new URL(image, metadataBase).toString() : image
+    );
+  }
+  return getDefaultOpenGraphImages(metadataBase).map((image) => image.url);
+}
 
 /** Build page metadata with canonical and Open Graph URLs from NEXT_PUBLIC_SITE_URL. */
 export function createPageMetadata({
@@ -15,24 +29,29 @@ export function createPageMetadata({
   description,
   path,
   images,
+  type = "website",
+  publishedTime,
+  modifiedTime,
+  noIndex = false,
+  absoluteTitle = false,
 }: MetadataOptions): Metadata {
   const url = absoluteUrl(path);
   const metadataBase = getSiteMetadataBase();
-  const ogImages = images?.length
-    ? images.map((image) =>
-        image.startsWith("http") ? image : metadataBase ? new URL(image, metadataBase).toString() : image
-      )
-    : getDefaultOpenGraphImages(metadataBase).map((image) => image.url);
+  const ogImages = resolveOgImages(images, metadataBase);
 
   return {
-    title,
+    title: absoluteTitle ? { absolute: title } : title,
     ...(description ? { description } : {}),
     ...(url ? { alternates: { canonical: url } } : {}),
+    ...(noIndex ? { robots: { index: false, follow: false } } : {}),
     openGraph: {
       title,
       ...(description ? { description } : { description: siteSeo.description }),
       siteName: siteSeo.siteName,
+      type,
       ...(url ? { url } : {}),
+      ...(publishedTime ? { publishedTime } : {}),
+      ...(modifiedTime ? { modifiedTime } : {}),
       images: ogImages,
     },
     twitter: {

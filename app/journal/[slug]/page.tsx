@@ -8,6 +8,8 @@ import { Footer } from "@/components/sections/Footer";
 import { PortableTextBody } from "@/components/sanity/PortableTextBody";
 import { getJournalPost, getJournalImageUrl, getJournalArticleBody, urlFor } from "@/lib/sanity";
 import { createPageMetadata } from "@/lib/metadata";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { articleJsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
 
 export const revalidate = 60;
 
@@ -19,10 +21,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getJournalPost(slug);
   if (!post) return { title: "Article" };
+  const imageUrl = post.mainImage ? urlFor(post.mainImage) : getJournalImageUrl(0);
   return createPageMetadata({
     title: post.title,
     description: post.excerpt,
     path: `/journal/${slug}`,
+    images: [imageUrl],
+    type: "article",
+    publishedTime: post.publishedAt,
   });
 }
 
@@ -41,6 +47,16 @@ export default async function JournalArticlePage({ params }: Props) {
 
   return (
     <>
+      <JsonLd
+        data={[
+          articleJsonLd(post, imageUrl),
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Journal", path: "/journal" },
+            { name: post.title, path: `/journal/${slug}` },
+          ]),
+        ]}
+      />
       <Section className="page-top">
         <Container>
           <article className="mx-auto max-w-3xl">

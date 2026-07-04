@@ -7,6 +7,9 @@ import { CollectionProductSection } from "@/components/collections/CollectionPro
 import { CollectionFeaturedRecipe } from "@/components/collections/CollectionFeaturedRecipe";
 import { CollectionJournalPreview } from "@/components/collections/CollectionJournalPreview";
 import { createPageMetadata } from "@/lib/metadata";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { absoluteUrl } from "@/lib/site";
+import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/structured-data";
 import { getCollectionProducts, resolveCollectionHandle } from "@/lib/shopify";
 import { getCollectionEditorial, getRecipe, getJournalPosts } from "@/lib/sanity";
 
@@ -24,6 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: editorial?.title ?? "Collection",
     description: editorial?.heroIntro,
     path: `/collections/${resolved}`,
+    images: editorial?.heroImage ? [editorial.heroImage] : undefined,
   });
 }
 
@@ -48,6 +52,21 @@ export default async function CollectionDetailPage({ params }: Props) {
 
   return (
     <>
+      <JsonLd
+        data={[
+          itemListJsonLd(
+            products.map((product) => ({
+              name: product.title,
+              url: absoluteUrl(`/product/${product.handle}`) ?? `/product/${product.handle}`,
+            }))
+          ),
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Collections", path: "/collections" },
+            { name: editorial.title, path: `/collections/${resolved}` },
+          ]),
+        ]}
+      />
       <CollectionHero editorial={editorial} />
       <CollectionStory editorial={editorial} />
       <CollectionProductSection products={products} collectionTitle={editorial.shortTitle} />

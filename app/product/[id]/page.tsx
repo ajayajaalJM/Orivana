@@ -2,14 +2,18 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProductPageContent } from "@/components/product/ProductPageContent";
 import { Footer } from "@/components/sections/Footer";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { getProduct, getProductsByHandles } from "@/lib/shopify";
 import { getCollectionProducts } from "@/lib/shopify/collections";
 import { createPageMetadata } from "@/lib/metadata";
+import { breadcrumbJsonLd, productJsonLd } from "@/lib/structured-data";
 import { getProductStory, getRecipesForProduct } from "@/lib/sanity";
 
 interface Props {
   params: Promise<{ id: string }>;
 }
+
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
@@ -48,6 +52,16 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <>
+      <JsonLd
+        data={[
+          productJsonLd(product),
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Shop", path: "/shop" },
+            { name: product.title, path: `/product/${product.handle}` },
+          ]),
+        ]}
+      />
       <ProductPageContent
         product={product}
         story={story}

@@ -5,17 +5,25 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Excerpt } from "@/components/ui/Typography";
 import { ImageBlock } from "@/components/ui/ImageBlock";
 import { Footer } from "@/components/sections/Footer";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { brand } from "@/lib/brand";
 import { createPageMetadata } from "@/lib/metadata";
+import { breadcrumbJsonLd } from "@/lib/structured-data";
 import { getBrandStoryPage, getBrandStoryImageUrl, urlFor } from "@/lib/sanity";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Our Story",
-  description: `${brand.tagline} — premium dates, olive oil, and raw honey from Mediterranean lands.`,
-  path: "/story",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const story = await getBrandStoryPage();
+  const imageUrl = story.image ? urlFor(story.image) : getBrandStoryImageUrl();
+
+  return createPageMetadata({
+    title: "Our Story",
+    description: `${brand.tagline} — premium dates, olive oil, and raw honey from Mediterranean lands.`,
+    path: "/story",
+    images: [imageUrl],
+  });
+}
 
 export default async function StoryPage() {
   const story = await getBrandStoryPage();
@@ -24,6 +32,12 @@ export default async function StoryPage() {
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Our Story", path: "/story" },
+        ])}
+      />
       <Section className="page-top">
         <Container>
           <div className="grid grid-cols-1 gap-12 sm:gap-16 lg:grid-cols-2">
